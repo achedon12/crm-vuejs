@@ -54,22 +54,43 @@ import { ref } from 'vue'
 import { useAuthStore } from '@/stores/authStore'
 import { useRouter } from 'vue-router'
 
+import Request from '@/api/Request.js'
+import Urls from "@/api/Urls";
+import { useToast } from "vue-toastification"
+
 const email = ref('')
 const password = ref('')
 const keepLoggedIn = ref(false)
 const loading = ref(false)
 const authStore = useAuthStore()
 const router = useRouter()
+const toast = useToast()
+
+const request = Request()
 
 const login = async () => {
   loading.value = true
   setTimeout(async () => {
+    const response = await request.post(Urls.auth.login, {
+      email: email.value,
+      password: password.value,
+    })
+
+    console.log(response)
+
+    if (response.status !== 200) {
+      loading.value = false
+      toast.error(response.message || 'Erreur lors de la connexion')
+      return
+    }
+
+    toast.success('Connexion réussie')
+
     // Simule une connexion réussie
     authStore.setUser({ id: 1, username: 'demo', email: email.value })
     authStore.setToken('fake-jwt-token')
     authStore.setKeepLoggedIn(keepLoggedIn.value)
     loading.value = false
-    router.push('/')
   }, 1000)
 }
 </script>

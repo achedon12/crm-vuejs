@@ -21,6 +21,10 @@ router.post('/login', async (req, res) => {
             user = await Administrator.findOne({email: req.body.email});
         }
 
+        if (!user) {
+            return res.status(404).json({message: 'User not found'});
+        }
+
         if (user && await bcrypt.compare(req.body.password, user.password)) {
             const token = jwt.sign({email: user.email}, process.env.JWT_SECRET);
 

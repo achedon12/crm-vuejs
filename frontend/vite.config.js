@@ -15,13 +15,5 @@ export default defineConfig({
     allowedHosts: [
       'localhost:3000'
     ],
-    proxy: {
-      '/api': {
-        target: 'http://localhost:3000',
-        changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path.replace(/^\/api/, '')
-      }
-    }
   }
 })

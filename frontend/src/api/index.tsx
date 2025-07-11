@@ -6,7 +6,7 @@ import { useAuthStore } from '@/stores/authStore.tsx'
 import {useGlobalStore} from "@/stores/globalStore";
 
 const api = axios.create({
-    baseURL: '/api',
+    baseURL: (import.meta.env.VITE_API_URL || 'http://localhost:3000') + '/api',
 })
 
 api.interceptors.request.use((config) => {

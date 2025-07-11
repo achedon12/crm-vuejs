@@ -1,5 +1,6 @@
 import {createApp} from 'vue'
 import App from './App.vue'
+import Toast from "vue-toastification"
 import router from './router'
 import i18n from '@/utils/i18n.js'
 import {createPinia} from 'pinia'
@@ -13,5 +14,6 @@ pinia.use(piniaPluginPersistedstate)
 app.use(pinia)
 app.use(router)
 app.use(i18n)
+app.use(Toast)
 
 app.mount('#app')

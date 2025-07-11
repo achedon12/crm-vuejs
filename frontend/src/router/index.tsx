@@ -1,7 +1,6 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import Dashboard from "@/pages/admin/Dashboard.vue";
 import Login from "@/pages/auth/Login.vue";
-import Register from "@/pages/auth/Register.vue";
 import AuthLayout from "@/layouts/AuthLayout.vue";
 import {useAuthStore} from "@/stores/authStore";
 import {computed} from "vue";
@@ -14,6 +13,11 @@ const router = createRouter({
             redirect: {name: '404'},
         },
         {
+            name: 'home',
+            path: '/',
+            redirect: {name: 'dashboard'},
+        },
+        {
             name: 'auth',
             path: '/auth',
             component: AuthLayout,
@@ -24,11 +28,6 @@ const router = createRouter({
                     path: 'login',
                     component: Login
                 },
-                {
-                    name: 'register',
-                    path: 'register',
-                    component: Register
-                }
             ]
         },
         {

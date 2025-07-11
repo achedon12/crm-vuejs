@@ -16,8 +16,8 @@ const Request = () => {
         try {
             return api
                 .get(url)
-                .then((response: any) => response.data)
-                .catch((error: any) => error.response.data)
+                .then((response: any) => response)
+                .catch((error: any) => error.response)
         } catch (error) {
             console.error('error', error)
         }
