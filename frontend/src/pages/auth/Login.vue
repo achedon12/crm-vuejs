@@ -6,12 +6,12 @@
         <form @submit.prevent="login">
           <div class="form-control mb-4">
             <label class="label">
-              <span class="label-text">Email</span>
+              <span class="label-text">Email ou nom d'utilisateur</span>
             </label>
             <input
-              v-model="email"
-              type="email"
-              placeholder="email"
+              v-model="emailOrUsername"
+              type="text"
+              placeholder="email ou nom d'utilisateur"
               class="input input-bordered"
               required
             />
@@ -58,7 +58,7 @@ import Request from '@/api/Request.js'
 import Urls from "@/api/Urls";
 import { useToast } from "vue-toastification"
 
-const email = ref('')
+const emailOrUsername = ref('')
 const password = ref('')
 const keepLoggedIn = ref(false)
 const loading = ref(false)
@@ -72,7 +72,7 @@ const login = async () => {
   loading.value = true
   setTimeout(async () => {
     const response = await request.post(Urls.auth.login, {
-      email: email.value,
+      emailOrUsername: emailOrUsername.value,
       password: password.value,
     })
 
@@ -91,7 +91,7 @@ const login = async () => {
     authStore.setToken(response.token)
     authStore.setKeepLoggedIn(keepLoggedIn.value)
     loading.value = false
-    router.push({ name: 'dashboard' })
+    await router.push({name: 'dashboard'})
   }, 1000)
 }
 </script>

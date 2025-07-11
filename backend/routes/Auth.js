@@ -13,27 +13,37 @@ router.post('/login', async (req, res) => {
     try {
         let user;
         let isSuperAdmin = false;
-        user = await User.findOne({email: req.body.email});
+        const identifier = req.body.emailOrUsername;
 
-        // looking for an administrator if user is not found
+        user = await User.findOne({
+            $or: [
+                { email: identifier },
+                { username: identifier }
+            ]
+        });
+
         if (!user) {
             isSuperAdmin = true;
-            user = await Administrator.findOne({email: req.body.email});
+            user = await Administrator.findOne({
+                $or: [
+                    { email: identifier },
+                    { username: identifier }
+                ]
+            });
         }
 
         if (!user) {
-            return res.status(404).json({message: 'User not found'});
+            return res.status(404).json({ message: 'User not found' });
         }
 
         if (user && await bcrypt.compare(req.body.password, user.password)) {
-            const token = jwt.sign({email: user.email}, process.env.JWT_SECRET);
-
-            res.status(200).json({token, user, isSuperAdmin});
+            const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET);
+            res.status(200).json({ token, user, isSuperAdmin });
         } else {
-            res.status(401).json({message: 'Invalid password'});
+            res.status(401).json({ message: 'Invalid password' });
         }
     } catch (error) {
-        res.status(400).json({message: error.message});
+        res.status(400).json({ message: error.message });
     }
 });
 

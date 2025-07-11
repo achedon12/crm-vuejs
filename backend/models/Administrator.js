@@ -6,6 +6,11 @@ const AdministratorSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
+    username: {
+        type: String,
+        required: true,
+        unique: true
+    },
     firstname: {
         type: String,
         required: true
