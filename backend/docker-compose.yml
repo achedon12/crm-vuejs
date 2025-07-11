@@ -6,7 +6,7 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - ./data:/data/db
+      - data:/data/db
     networks:
       - network
     environment:
@@ -39,6 +39,10 @@ services:
       - "8030:8025"
       networks:
       - network
+
+volumes:
+  data:
+    driver: local
 
 networks:
   network:
