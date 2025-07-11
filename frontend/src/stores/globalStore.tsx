@@ -2,7 +2,8 @@ import {defineStore} from 'pinia'
 
 export const useGlobalStore = defineStore('global', {
     state: () => ({
-        language: 'en'
+        language: 'en',
+        isSidebarMinimized: false as boolean,
     }),
     persist: true,
     actions: {
@@ -11,6 +12,9 @@ export const useGlobalStore = defineStore('global', {
         },
         clearLanguage() {
             this.language = 'en';
-        }
+        },
+        toggleSidebar() {
+            this.isSidebarMinimized = !this.isSidebarMinimized;
+        },
     }
 })
