@@ -11,7 +11,6 @@
             <input
               v-model="emailOrUsername"
               type="text"
-              placeholder="email ou nom d'utilisateur"
               class="input input-bordered"
               required
             />
@@ -23,7 +22,6 @@
             <input
               v-model="password"
               type="password"
-              placeholder="mot de passe"
               class="input input-bordered"
               required
             />
