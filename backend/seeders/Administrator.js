@@ -9,6 +9,7 @@ const seedUsers = async () => {
     // adminUser
     const adminUser = new Administrator({
         email: 'admin@gmail.com',
+        username: 'admin',
         firstname: 'admin',
         lastname: 'admin',
         password: 'admin',
@@ -17,7 +18,7 @@ const seedUsers = async () => {
     adminUser.password = await bcrypt.hash('admin', 10);
     await adminUser.save();
 
-    console.log('Users seeded');
+    console.log('Administrator seeded');
 }
 
 module.exports = seedUsers;
