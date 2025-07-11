@@ -6,6 +6,7 @@ export const useAuthStore = defineStore('auth', {
         user: null as User | null,
         token: null,
         keepLoggedIn: false as boolean,
+        isSuperAdmin: false as boolean
     }),
     persist: true,
     actions: {
@@ -22,5 +23,10 @@ export const useAuthStore = defineStore('auth', {
         setKeepLoggedIn(keepLoggedIn: boolean) {
             this.keepLoggedIn = keepLoggedIn;
         },
+        setIsSuperAdmin(isSuperAdmin: boolean) {
+            if (this.user) {
+                this.user.isSuperAdmin = isSuperAdmin;
+            }
+        }
     }
 })

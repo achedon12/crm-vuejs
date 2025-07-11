@@ -35,17 +35,12 @@ const router = createRouter({
             path: '/admin',
             redirect: {name: 'dashboard'},
             beforeEnter: (to, from, next) => {
-                const authStore = useAuthStore
-
-                const user = computed(() => authStore.user)
-                const token = computed(() => authStore.token)
-
-                if (!user.value || !token.value) {
-                    next({name: 'login'})
+                const authStore = useAuthStore()
+                if (!authStore.user || !authStore.token) {
+                    next({ name: 'login' })
                 } else {
                     next()
                 }
-
             },
             children: [
                 {

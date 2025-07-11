@@ -11,6 +11,7 @@ const sendMail = require("../utils/mailer");
 
 router.post('/login', async (req, res) => {
     try {
+        console.log('Login attempt for:', req.body);
         let user;
         let isSuperAdmin = false;
         const identifier = req.body.emailOrUsername;

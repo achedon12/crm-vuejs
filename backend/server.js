@@ -8,6 +8,11 @@ dotenv.config();
 connectDB();
 
 const app = express();
+
+const multer = require('multer');
+const upload = multer();
+
+app.use(upload.none());
 app.use(express.json());
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));

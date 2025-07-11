@@ -76,8 +76,6 @@ const login = async () => {
       password: password.value,
     })
 
-    console.log(response)
-
     if (!response.user) {
       loading.value = false
       toast.error(response.message || 'Erreur lors de la connexion')
@@ -90,8 +88,9 @@ const login = async () => {
     authStore.setUser(response.user)
     authStore.setToken(response.token)
     authStore.setKeepLoggedIn(keepLoggedIn.value)
+    authStore.setIsSuperAdmin(response.user.is_super_admin || false)
     loading.value = false
-    await router.push({name: 'dashboard'})
+    await router.push({ name: 'dashboard' })
   }, 1000)
 }
 </script>
