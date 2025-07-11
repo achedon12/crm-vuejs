@@ -1,0 +1,75 @@
+<template>
+  <div class="min-h-screen flex items-center justify-center">
+    <div class="card w-full max-w-md shadow-xl bg-base-100">
+      <div class="card-body">
+        <h2 class="card-title justify-center mb-4">Connexion</h2>
+        <form @submit.prevent="login">
+          <div class="form-control mb-4">
+            <label class="label">
+              <span class="label-text">Email</span>
+            </label>
+            <input
+              v-model="email"
+              type="email"
+              placeholder="email"
+              class="input input-bordered"
+              required
+            />
+          </div>
+          <div class="form-control mb-4">
+            <label class="label">
+              <span class="label-text">Mot de passe</span>
+            </label>
+            <input
+              v-model="password"
+              type="password"
+              placeholder="mot de passe"
+              class="input input-bordered"
+              required
+            />
+          </div>
+          <div class="form-control mb-4">
+            <label class="cursor-pointer label">
+              <input type="checkbox" v-model="keepLoggedIn" class="checkbox checkbox-primary" />
+              <span class="label-text ml-2">Rester connecté</span>
+            </label>
+          </div>
+          <div class="form-control">
+            <button class="btn btn-primary w-full" type="submit" :disabled="loading">
+              <span v-if="loading" class="loading loading-spinner"></span>
+              <span v-else>Se connecter</span>
+            </button>
+          </div>
+        </form>
+        <div class="text-center mt-4">
+          <RouterLink to="/auth/register" class="link link-primary">Créer un compte</RouterLink>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import { useAuthStore } from '@/stores/authStore'
+import { useRouter } from 'vue-router'
+
+const email = ref('')
+const password = ref('')
+const keepLoggedIn = ref(false)
+const loading = ref(false)
+const authStore = useAuthStore()
+const router = useRouter()
+
+const login = async () => {
+  loading.value = true
+  setTimeout(async () => {
+    // Simule une connexion réussie
+    authStore.setUser({ id: 1, username: 'demo', email: email.value })
+    authStore.setToken('fake-jwt-token')
+    authStore.setKeepLoggedIn(keepLoggedIn.value)
+    loading.value = false
+    router.push('/')
+  }, 1000)
+}
+</script>
