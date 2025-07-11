@@ -79,13 +79,18 @@ const login = async () => {
 
     toast.success('Connexion réussie')
 
-    // Simule une connexion réussie
-    authStore.setUser(response.user)
-    authStore.setToken(response.token)
-    authStore.setKeepLoggedIn(keepLoggedIn.value)
-    authStore.setIsSuperAdmin(response.user.is_super_admin || false)
+    authStore.login(
+        response.user,
+        response.token,
+        keepLoggedIn.value,
+        response.isSuperAdmin
+    )
     loading.value = false
-    await router.push({ name: 'dashboard' })
+    if (response.isSuperAdmin) {
+      await router.push({ name: 'admin' })
+    } else {
+      await router.push({ name: 'home' })
+    }
   }, 1000)
 }
 </script>

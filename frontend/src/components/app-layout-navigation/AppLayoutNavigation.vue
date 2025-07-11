@@ -10,14 +10,6 @@
     </button>
     <nav class="flex items-center">
       <ol class="flex items-center space-x-2 text-sm">
-        <li>
-          <router-link
-              :to="{ name: 'dashboard' }"
-              class="link link-hover"
-          >
-            Home
-          </router-link>
-        </li>
         <li v-for="item in items" :key="item.label" class="flex items-center">
           <span class="mx-1 text-base-content/40">/</span>
           <router-link
@@ -39,9 +31,11 @@
 import {computed} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
 import {useI18n} from 'vue-i18n'
-import NavigationRoutes from '@/components/sidebar/NavigationRoutes.js'
 
-const props = defineProps<{ isSidebarMinimized: boolean }>()
+const props = defineProps<{
+  isSidebarMinimized: boolean,
+  navigationRoutes: { routes: any[] }
+}>()
 const emit = defineEmits(['toggle-sidebar'])
 
 const router = useRouter()
@@ -63,7 +57,7 @@ const findRouteName = (name: string) => {
     }
     return ''
   }
-  return traverse(NavigationRoutes.routes)
+  return traverse(props.navigationRoutes.routes)
 }
 
 const items = computed(() => {

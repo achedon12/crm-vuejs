@@ -1,4 +1,4 @@
-const NavigationRoutes = {
+const AppNavigationRoutes = {
     root: {
         name: '/',
         displayName: 'navigationRoutes.home',
@@ -24,8 +24,8 @@ const NavigationRoutes = {
             meta: {
                 icon: 'settings',
             },
-        },
+        }
     ],
 }
 
-export default NavigationRoutes
+export default AppNavigationRoutes

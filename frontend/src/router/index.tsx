@@ -1,11 +1,13 @@
 import {createRouter, createWebHistory} from 'vue-router'
-import Dashboard from "@/pages/admin/Dashboard.vue";
-import Login from "@/pages/auth/Login.vue";
-import AuthLayout from "@/layouts/AuthLayout.vue";
 import {useAuthStore} from "@/stores/authStore";
+import AuthLayout from "@/layouts/AuthLayout.vue";
 import AppLayout from "@/layouts/AppLayout.vue";
-import Preferences from "@/pages/preferences/Preferences.vue";
-import Settings from "@/pages/settings/Settings.vue";
+import AdminLayout from "@/layouts/AdminLayout.vue";
+import Login from "@/pages/login/Login.vue";
+import Dashboard from "@/pages/app/dashboard/Dashboard.vue";
+import Preferences from "@/pages/app/preferences/Preferences.vue";
+import Settings from "@/pages/app/settings/Settings.vue";
+import Realms from "@/pages/admin/realms/Realms.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -15,15 +17,21 @@ const router = createRouter({
             redirect: {name: '404'},
         },
         {
-            name: 'home',
-            path: '/',
-            redirect: {name: 'dashboard'},
-        },
-        {
-            name: 'auth',
-            path: '/auth',
-            component: AuthLayout,
+            path: '/login',
             redirect: {name: 'login'},
+            component: AuthLayout,
+            beforeEnter: (to, from, next) => {
+                const authStore = useAuthStore()
+                if (authStore.user && authStore.token) {
+                    if (authStore.isSuperAdmin) {
+                        next({name: 'admin'})
+                    } else {
+                        next({name: 'home'})
+                    }
+                } else {
+                    next()
+                }
+            },
             children: [
                 {
                     name: 'login',
@@ -35,6 +43,28 @@ const router = createRouter({
         {
             name: 'admin',
             path: '/admin',
+            redirect: {name: 'realms'},
+            component: AdminLayout,
+            beforeEnter: (to, from, next) => {
+                const authStore = useAuthStore()
+                if (!authStore.user || !authStore.token) {
+                    next({name: 'login'})
+                } else if (!authStore.isSuperAdmin) {
+                    next({name: 'home'})
+                } else {
+                    next()
+                }
+            },
+            children: [
+                {
+                    name: 'realms',
+                    path: 'realms',
+                    component: Realms,
+                },
+            ]
+        }, {
+            name: 'home',
+            path: '/',
             redirect: {name: 'dashboard'},
             component: AppLayout,
             beforeEnter: (to, from, next) => {

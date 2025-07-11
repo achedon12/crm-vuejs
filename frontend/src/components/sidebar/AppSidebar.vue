@@ -1,14 +1,14 @@
 <template>
   <aside
       :class="[
-        'transition-all duration-300 bg-base-200 flex flex-col overflow-y-auto min-h-screen',
+        'transition-all duration-300 bg-base-200 flex flex-col justify-between overflow-y-auto min-h-screen p-4',
         props.mobile ? 'w-screen fixed z-40 h-full' : 'w-72 h-full',
         !writableVisible ? 'hidden' : '',
       ]"
   >
     <nav>
       <ul>
-        <li v-for="(route, index) in navigationRoutes.routes" :key="index">
+        <li v-for="(route, index) in props.navigationRoutes.routes" :key="index">
           <div
               class="flex items-center cursor-pointer px-4 py-3 hover:bg-base-300 rounded"
               :aria-label="`${!route.hideChildren && route.children ? 'Ouvrir la catégorie ' : 'Aller à'} ${t(route.displayName)}`"
@@ -48,6 +48,13 @@
         </li>
       </ul>
     </nav>
+    <button
+        class="btn btn-ghost w-full text-left"
+        @click="logout"
+        aria-label="Logout"
+    >
+      <span class="material-icons text-lg text-secondary">logout</span>{{ t('menu.logout') }}
+    </button>
   </aside>
 </template>
 
@@ -55,9 +62,13 @@
 import {computed, ref, watch} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
 import {useI18n} from 'vue-i18n'
-import navigationRoutes from '@/components/sidebar/NavigationRoutes.js'
+import {useAuthStore} from "@/stores/authStore";
+import {useToast} from "vue-toastification";
+const toast = useToast()
 
+const authStore = useAuthStore()
 const props = defineProps({
+  navigationRoutes: {type: Object, required: true},
   visible: {type: Boolean, default: true},
   mobile: {type: Boolean, default: false},
 })
@@ -84,7 +95,17 @@ const routeHasActiveChild = (section) => {
 }
 
 const setActiveExpand = () => {
-  expanded.value = navigationRoutes.routes.map((route) => routeHasActiveChild(route))
+  expanded.value = props.navigationRoutes.routes.map((route) => routeHasActiveChild(route))
+}
+
+const logout = () => {
+  let redirectName = 'login'
+  if (authStore.isSuperAdmin && authStore.isSwitched) {
+    redirectName = '/admin'
+  }
+  authStore.logout();
+  toast.error('Déconnexion réussie')
+  router.push({name: redirectName})
 }
 
 watch(
