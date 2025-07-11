@@ -8,6 +8,12 @@
   >
     <nav>
       <ul>
+        <li class="mb-4">
+          <div class="flex items items-center px-4 py-3 bg-base-300 rounded">
+            <span class="material-icons text-secondary">account_circle</span>
+            <span class="text-lg font-semibold ml-4">{{ authStore.user?.username || t('menu.welcome') }}</span>
+          </div>
+        </li>
         <li v-for="(route, index) in props.navigationRoutes.routes" :key="index">
           <div
               class="flex items-center cursor-pointer px-4 py-3 hover:bg-base-300 rounded"

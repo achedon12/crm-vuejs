@@ -5,6 +5,7 @@ const FRMessages = {
         preferences: 'Préférences',
         settings: 'Paramètres',
         logout: 'Se déconnecter',
+        welcome: 'Bienvenue',
     }
 }
 

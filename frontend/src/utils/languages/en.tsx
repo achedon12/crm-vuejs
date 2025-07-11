@@ -5,6 +5,7 @@ const ENMessages = {
         preferences: 'Preferences',
         settings: 'Settings',
         logout: 'Logout',
+        welcome: 'Welcome',
     }
 }
 
