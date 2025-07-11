@@ -17,8 +17,8 @@ const TaskSchema = new mongoose.Schema({
     },
     state: {
         type: String,
-        enum: ['todo', 'in_progress', 'done', 'archived'],
-        default: 'todo'
+        enum: ['submitted', 'in_progress', 'done', 'archived'],
+        default: 'submitted'
     },
     startDate: {
         type: Date,
