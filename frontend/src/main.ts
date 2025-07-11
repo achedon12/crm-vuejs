@@ -5,6 +5,7 @@ import router from './router'
 import i18n from '@/utils/i18n.js'
 import {createPinia} from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
+import "vue-toastification/dist/index.css"
 
 const app = createApp(App)
 

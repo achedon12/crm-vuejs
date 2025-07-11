@@ -78,7 +78,7 @@ const login = async () => {
 
     console.log(response)
 
-    if (response.status !== 200) {
+    if (!response.user) {
       loading.value = false
       toast.error(response.message || 'Erreur lors de la connexion')
       return
@@ -87,10 +87,11 @@ const login = async () => {
     toast.success('Connexion réussie')
 
     // Simule une connexion réussie
-    authStore.setUser({ id: 1, username: 'demo', email: email.value })
-    authStore.setToken('fake-jwt-token')
+    authStore.setUser(response.user)
+    authStore.setToken(response.token)
     authStore.setKeepLoggedIn(keepLoggedIn.value)
     loading.value = false
+    router.push({ name: 'dashboard' })
   }, 1000)
 }
 </script>
