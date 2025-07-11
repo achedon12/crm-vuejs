@@ -5,9 +5,7 @@ const Administrator = require('../models/Administrator');
 const seedUsers = async () => {
     await Administrator.deleteMany({});
 
-
-    // adminUser
-    const adminUser = new Administrator({
+    const admin = new Administrator({
         email: 'admin@gmail.com',
         username: 'admin',
         firstname: 'admin',
@@ -15,8 +13,8 @@ const seedUsers = async () => {
         password: 'admin',
     });
 
-    adminUser.password = await bcrypt.hash('admin', 10);
-    await adminUser.save();
+    admin.password = await bcrypt.hash('admin', 10);
+    await admin.save();
 
     console.log('Administrator seeded');
 }
