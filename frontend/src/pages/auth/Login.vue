@@ -39,9 +39,6 @@
             </button>
           </div>
         </form>
-        <div class="text-center mt-4">
-          <RouterLink to="/auth/register" class="link link-primary">Créer un compte</RouterLink>
-        </div>
       </div>
     </div>
   </div>
