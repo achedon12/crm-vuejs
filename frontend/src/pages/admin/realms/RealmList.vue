@@ -28,7 +28,7 @@ function addRealm() {
   <div class="bg-base-200 rounded-box p-8 h-full">
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-lg font-bold">Realms</h2>
-      <button class="btn btn-circle material-icons btn-secondary" @click="addRealm">add</button>
+      <button class="btn btn-circle material-symbols-rounded btn-secondary" @click="addRealm">add</button>
     </div>
     <div class="flex flex-col">
       <input

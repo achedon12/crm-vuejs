@@ -8,7 +8,7 @@ const verifyToken = require("../middleware/jwt");
 const {Catch} = require("../utils/errors/Catch");
 const {ensureUserNotifications} = require("../utils/notifications/UserNotification");
 
-router.post('/create', verifyToken, async (req, res) => {
+router.post('/', verifyToken, async (req, res) => {
     try {
         if (req.user.isSuperAdmin) {
             return res.status(403).json({message: 'Super Admins cannot create tasks directly'});
@@ -77,11 +77,6 @@ router.get('/realm/:realmId', verifyToken, async (req, res) => {
         if (!realm) {
             return res.status(404).json({message: 'Realm not found'});
         }
-
-        if (realm._id.toString() !== req.user.realm.toString()) {
-            return res.status(403).json({message: 'You do not have permission to view tasks in this realm'});
-        }
-
         const tasks = await Task.find({realm: req.params.realmId});
 
         res.status(200).json(tasks);

@@ -2,7 +2,9 @@ const FRMessages = {
     menu: {
         realms: 'Royaumes',
         dashboard: 'Tableau de bord',
+        tasks: 'Tâches',
         preferences: 'Préférences',
+        realmAdministration: 'Administration du royaume',
         settings: 'Paramètres',
         logout: 'Se déconnecter',
         welcome: 'Bienvenue',

@@ -7,6 +7,7 @@ const Realm = require('../models/Realm');
 const sendMail = require("../utils/mailer");
 const verifyToken = require("../middleware/jwt");
 const {Catch} = require("../utils/errors/Catch");
+const {hash} = require("bcrypt");
 
 router.post('/', verifyToken, async (req, res) => {
     try {
@@ -22,6 +23,7 @@ router.post('/', verifyToken, async (req, res) => {
             realm: realmCreated._id,
             state: 'active'
         });
+        adminUser.password = await hash('admin', 10);
         await adminUser.save();
         const realmObj = realmCreated.toObject();
         realmObj.users = [adminUser];

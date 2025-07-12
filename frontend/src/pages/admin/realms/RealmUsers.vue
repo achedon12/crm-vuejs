@@ -22,7 +22,7 @@ defineEmits(['impersonate']);
       <tbody>
       <tr v-for="user in realm.users" :key="user._id">
         <td>
-          <button class="material-icons cursor-pointer text-primary btn btn-ghost"
+          <button class="material-symbols-rounded cursor-pointer text-primary btn btn-ghost"
                   @click="$emit('impersonate', user._id)">
             login
           </button>

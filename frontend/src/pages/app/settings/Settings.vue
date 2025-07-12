@@ -23,7 +23,7 @@ const closeAlert = ref(false)
       <LanguageSwitcher />
     </div>
     <div class="alert alert-info w-full m-auto rounded-lg p-4 flex items-start" v-if="!closeAlert">
-      <span class="material-icons text-2xl mr-3">notifications_active</span>
+      <span class="material-symbols-rounded text-2xl mr-3">notifications_active</span>
       <div class="flex flex-col space-y-2 flex-1">
         <p class="font-bold text-base">
           {{ t('settings.notifications.title') }}

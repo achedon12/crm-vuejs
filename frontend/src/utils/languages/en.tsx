@@ -2,7 +2,9 @@ const ENMessages = {
     menu: {
         realms: "Realms",
         dashboard: 'Dashboard',
+        tasks: 'Tasks',
         preferences: 'Preferences',
+        realmAdministration: 'Realm Administration',
         settings: 'Settings',
         logout: 'Logout',
         welcome: 'Welcome',

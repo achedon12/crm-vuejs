@@ -10,11 +10,17 @@
       <ul>
         <li class="mb-4">
           <div class="flex items items-center px-4 py-3 bg-base-300 rounded">
-            <span class="material-icons text-secondary">account_circle</span>
-            <span class="text-lg font-semibold ml-4">{{ authStore.user?.username || authStore.superAdmin.username || t('menu.welcome') }}</span>
+            <span class="material-symbols-rounded text-secondary">account_circle</span>
+            <span
+                :class="`${usernameClass.value} font-semibold ml-4 truncate`"
+                style="max-width: 12rem; display: inline-block;"
+                :title="username"
+            >
+            {{ truncatedUsername }}
+          </span>
           </div>
         </li>
-        <li v-for="(route, index) in props.navigationRoutes.routes" :key="index">
+        <li v-for="(route, index) in filteredRoutes" :key="index">
           <div
               class="flex items-center cursor-pointer px-4 py-3 hover:bg-base-300 rounded"
               :aria-label="`${!route.hideChildren && route.children ? 'Ouvrir la catégorie ' : 'Aller à'} ${t(route.displayName)}`"
@@ -25,12 +31,12 @@
               }"
           >
               <span class="flex items-center gap-2">
-                <span v-if="route.meta && route.meta.icon" class="material-icons text-lg" :class="iconColor(route)">
+                <span v-if="route.meta && route.meta.icon" class="material-symbols-rounded text-lg" :class="iconColor(route)">
                   {{ route.meta.icon }}
                 </span>
                 {{ t(route.displayName) }}
               </span>
-            <span v-if="!route.hideChildren && route.children" class="material-icons">
+            <span v-if="!route.hideChildren && route.children" class="material-symbols-rounded">
                 {{ expanded[index] ? 'expand_less' : 'expand_more' }}
               </span>
           </div>
@@ -44,7 +50,7 @@
                 }"
                 @click="goToRoute(childRoute.name)"
             >
-                <span v-if="childRoute.meta && childRoute.meta.icon" class="material-icons text-base mr-2"
+                <span v-if="childRoute.meta && childRoute.meta.icon" class="material-symbols-rounded text-base mr-2"
                       :class="iconColor(childRoute)">
                   {{ childRoute.meta.icon }}
                 </span>
@@ -59,7 +65,7 @@
         @click="logout"
         aria-label="Logout"
     >
-      <span class="material-icons text-lg text-secondary">logout</span>{{ t('menu.logout') }}
+      <span class="material-symbols-rounded text-lg text-secondary">logout</span>{{ t('menu.logout') }}
     </button>
   </aside>
 </template>
@@ -70,6 +76,7 @@ import {useRoute, useRouter} from 'vue-router'
 import {useI18n} from 'vue-i18n'
 import {useAuthStore} from "@/stores/authStore";
 import {useToast} from "vue-toastification";
+
 const toast = useToast()
 
 const authStore = useAuthStore()
@@ -149,10 +156,37 @@ const popoverBody = computed(() =>
         .split('  ')
         .join('<br>')
 )
+
+const username = computed(() =>
+    authStore.user?.username || authStore.superAdmin?.username || t('menu.welcome')
+)
+
+const usernameClass = computed(() => {
+  const len = username.value.length
+  if (len > 20) return 'text-base'
+  if (len > 12) return 'text-lg'
+  return 'text-xl'
+})
+
+const truncatedUsername = computed(() => {
+  const maxLen = 24
+  return username.value.length > maxLen
+      ? username.value.slice(0, maxLen) + '...'
+      : username.value
+})
+
+const filteredRoutes = computed(() => {
+  return props.navigationRoutes.routes.filter(route => {
+    if (route.meta?.requiresAdmin) {
+      return authStore.user?.role?.includes('admin')
+    }
+    return true
+  })
+})
 </script>
 
 <style scoped>
-.material-icons {
+.material-symbols-rounded {
   vertical-align: middle;
 }
 

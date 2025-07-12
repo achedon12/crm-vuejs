@@ -10,7 +10,8 @@ connectDB();
 
 const seedDatabase = async () => {
     try {
-        console.log('Database seeded');
+        await mongoose.connection.dropDatabase();
+        console.log('Database cleared');
         await seedAdministrators();
         await seedRealm();
     } catch (error) {

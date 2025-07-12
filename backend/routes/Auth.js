@@ -19,7 +19,7 @@ router.post('/login', async (req, res) => {
                 {email: identifier},
                 {username: identifier}
             ]
-        });
+        }).populate('realm');
 
         if (!user) {
             isSuperAdmin = true;

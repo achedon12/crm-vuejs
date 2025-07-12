@@ -68,7 +68,7 @@ function handleDelete() {
         </button>
         <button type="button" class="btn btn-ghost" @click="handleCancel">Annuler</button>
       </div>
-      <button v-if="props.realm && props.realm.name !== 'Default Realm'" type="button" class="btn btn-error ml-2" @click="handleDelete">
+      <button v-if="props.realm" type="button" class="btn btn-error ml-2" @click="handleDelete">
         Supprimer
       </button>
     </div>

@@ -115,7 +115,7 @@ function handleDeleteRealm(realmId: string) {
       />
     </div>
     <div class="md:w-2/3 w-full">
-      <div v-if="isAdding">
+      <div v-if="isAdding || !selectedRealm">
         <div class="tabs tabs-lift h-full">
           <input type="radio" name="my_tabs" class="tab font-bold" aria-label="Ajout de realm" checked="checked"/>
           <div class="tab-content bg-base-100 border-base-300 p-6">

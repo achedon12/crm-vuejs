@@ -1,5 +1,6 @@
 const Realm = require('../models/Realm');
 const User = require("../models/User");
+const bcrypt = require("bcrypt");
 
 const seedRealm = async () => {
     await Realm.deleteMany({});
@@ -12,7 +13,7 @@ const seedRealm = async () => {
         const realm = new Realm(realmData);
         await realm.save();
         const adminUser = new User({
-            email: 'default_admin@' + realm.name.replace(/\s+/g, '_').toLowerCase() + '@default.com',
+            email: 'default_admin_' + realm.name.replace(/\s+/g, '_').toLowerCase() + '@default.com',
             username: 'default_admin_' + realm.name.replace(/\s+/g, '_').toLowerCase(),
             firstname: 'default',
             lastname: 'admin',
@@ -21,6 +22,7 @@ const seedRealm = async () => {
             realm: realm._id,
             state: 'active'
         });
+        adminUser.password = await bcrypt.hash('admin', 10);
         await adminUser.save();
     }
 

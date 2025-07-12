@@ -36,7 +36,7 @@ watch(
         @click="theme = option.value"
         type="button"
     >
-      <span class="material-icons align-middle mr-1">{{ option.icon }}</span>
+      <span class="material-symbols-rounded align-middle mr-1">{{ option.icon }}</span>
       {{ option.label }}
     </button>
   </div>

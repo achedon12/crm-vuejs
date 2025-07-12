@@ -6,7 +6,7 @@
         @click="$emit('toggle-sidebar')"
         aria-label="Toggle sidebar"
     >
-      <span class="material-icons text-secondary">menu_open</span>
+      <span class="material-symbols-rounded text-secondary">menu_open</span>
     </button>
     <nav class="flex items-center">
       <ol class="flex items-center space-x-2 text-sm">

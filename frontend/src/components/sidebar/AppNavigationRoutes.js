@@ -12,10 +12,25 @@ const AppNavigationRoutes = {
             },
         },
         {
+            name: 'tasks',
+            displayName: 'menu.tasks',
+            meta: {
+                icon: 'assignment',
+            },
+        },
+        {
             name: 'preferences',
             displayName: 'menu.preferences',
             meta: {
                 icon: 'manage_accounts',
+            },
+        },
+        {
+            name: 'realm-administration',
+            displayName: 'menu.realmAdministration',
+            meta: {
+                icon: 'domain',
+                requiresAdmin: true,
             },
         },
         {

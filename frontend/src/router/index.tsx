@@ -1,11 +1,13 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import {useAuthStore} from "@/stores/authStore";
-import AuthLayout from "@/layouts/AuthLayout.vue";
+import LoginLayout from "@/layouts/LoginLayout.vue";
 import AppLayout from "@/layouts/AppLayout.vue";
 import AdminLayout from "@/layouts/AdminLayout.vue";
 import Login from "@/pages/login/Login.vue";
 import Dashboard from "@/pages/app/dashboard/Dashboard.vue";
+import Tasks from "@/pages/app/tasks/Tasks.vue";
 import Preferences from "@/pages/app/preferences/Preferences.vue";
+import RealmAdministration from "@/pages/app/realm-administration/RealmAdministration.vue";
 import Settings from "@/pages/app/settings/Settings.vue";
 import Realms from "@/pages/admin/realms/Realms.vue";
 
@@ -19,7 +21,7 @@ const router = createRouter({
         {
             path: '/login',
             redirect: {name: 'login'},
-            component: AuthLayout,
+            component: LoginLayout,
             beforeEnter: (to, from, next) => {
                 const authStore = useAuthStore()
                 if (authStore.user && authStore.token) {
@@ -85,9 +87,19 @@ const router = createRouter({
                     component: Dashboard,
                 },
                 {
+                    name: 'tasks',
+                    path: 'tasks',
+                    component: Tasks
+                },
+                {
                     name: 'preferences',
                     path: 'preferences',
                     component: Preferences
+                },
+                {
+                    name: 'realm-administration',
+                    path: 'realm-administration',
+                    component: RealmAdministration
                 },
                 {
                     name: 'settings',
