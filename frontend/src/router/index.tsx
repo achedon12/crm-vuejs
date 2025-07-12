@@ -23,7 +23,7 @@ const router = createRouter({
             beforeEnter: (to, from, next) => {
                 const authStore = useAuthStore()
                 if (authStore.user && authStore.token) {
-                    if (authStore.isSuperAdmin) {
+                    if (authStore.superAdmin) {
                         next({name: 'admin'})
                     } else {
                         next({name: 'home'})
@@ -47,9 +47,9 @@ const router = createRouter({
             component: AdminLayout,
             beforeEnter: (to, from, next) => {
                 const authStore = useAuthStore()
-                if (!authStore.user || !authStore.token) {
+                if (!authStore.user && !authStore.token && !authStore.superAdmin) {
                     next({name: 'login'})
-                } else if (!authStore.isSuperAdmin) {
+                } else if (!authStore.superAdmin) {
                     next({name: 'home'})
                 } else {
                     next()
@@ -70,9 +70,9 @@ const router = createRouter({
             component: AppLayout,
             beforeEnter: (to, from, next) => {
                 const authStore = useAuthStore()
-                if (!authStore.user || !authStore.token) {
+                if (!authStore.user || !authStore.token || (authStore.superAdmin && !authStore.isSwitched)) {
                     next({name: 'login'})
-                } else if (authStore.isSuperAdmin && !authStore.isSwitched) {
+                } else if (authStore.superAdmin && !authStore.isSwitched) {
                     next({name: 'admin'})
                 } else {
                     next()

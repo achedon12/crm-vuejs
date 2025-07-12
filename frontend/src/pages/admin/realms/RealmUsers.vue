@@ -4,7 +4,7 @@ import {defineEmits, defineProps} from 'vue'
 defineProps<{
   realm: any
 }>();
-const emit = defineEmits(['impersonate']);
+defineEmits(['impersonate']);
 
 
 </script>
@@ -20,10 +20,10 @@ const emit = defineEmits(['impersonate']);
       </tr>
       </thead>
       <tbody>
-      <tr v-for="user in realm.users" :key="user.id">
+      <tr v-for="user in realm.users" :key="user._id">
         <td>
           <button class="material-icons cursor-pointer text-primary btn btn-ghost"
-                  @click="$emit('impersonate', user.id)">
+                  @click="$emit('impersonate', user._id)">
             login
           </button>
         </td>

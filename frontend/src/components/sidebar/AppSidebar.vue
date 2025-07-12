@@ -11,7 +11,7 @@
         <li class="mb-4">
           <div class="flex items items-center px-4 py-3 bg-base-300 rounded">
             <span class="material-icons text-secondary">account_circle</span>
-            <span class="text-lg font-semibold ml-4">{{ authStore.user?.username || t('menu.welcome') }}</span>
+            <span class="text-lg font-semibold ml-4">{{ authStore.user?.username || authStore.superAdmin.username || t('menu.welcome') }}</span>
           </div>
         </li>
         <li v-for="(route, index) in props.navigationRoutes.routes" :key="index">
@@ -106,8 +106,8 @@ const setActiveExpand = () => {
 
 const logout = () => {
   let redirectName = 'login'
-  if (authStore.isSuperAdmin && authStore.isSwitched) {
-    redirectName = '/admin'
+  if (authStore.superAdmin && authStore.isSwitched) {
+    redirectName = 'admin'
   }
   authStore.logout();
   toast.error('Déconnexion réussie')

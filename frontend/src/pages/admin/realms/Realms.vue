@@ -5,11 +5,15 @@ import RealmUsers from './RealmUsers.vue'
 import RealmForm from './RealmForm.vue'
 import {Realm} from "@/utils/interfaces/Realm";
 import Request from "@/api/Request";
+import {useAuthStore} from "@/stores/authStore";
+import {useRouter} from 'vue-router'
 
 const realms = ref<Realm[]>([])
 const selectedRealm = ref<Realm | null>(null)
 const isAdding = ref(false)
 const request = Request()
+const authStore = useAuthStore()
+const router = useRouter()
 
 onMounted(async () => {
   try {
@@ -49,7 +53,6 @@ function handleAddOrEditRealm(realm: Realm) {
   } else {
     request.post('/realm', realm)
       .then(response => {
-        debugger
         realms.value.push(response)
         selectedRealm.value = response
         isAdding.value = false
@@ -74,7 +77,9 @@ function handleAddRealm() {
 }
 
 function handleImpersonate(userId: string) {
-  //TODO
+  const user = selectedRealm.value?.users.find(u => u._id === userId)
+  authStore.impersonate(user)
+  router.push({ name: 'home' })
 }
 </script>
 
