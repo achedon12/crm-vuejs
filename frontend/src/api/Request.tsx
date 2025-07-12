@@ -23,6 +23,17 @@ const Request = () => {
         }
     }
 
+    const put = async (url: string, data = {}) => {
+        try {
+            return api
+                .put(url, mergeBody(data))
+                .then((response: any) => response.data)
+                .catch((error: any) => error.response.data)
+        } catch (error) {
+            console.error('error', error)
+        }
+    }
+
     const imageExists = async (url: string) => {
         try {
             const request = api.head(url)
@@ -69,6 +80,7 @@ const Request = () => {
 
     return {
         get,
+        put,
         post,
         del,
         imageExists,

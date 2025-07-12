@@ -7,55 +7,53 @@ const Realm = require('../models/Realm');
 const sendMail = require("../utils/mailer");
 const verifyToken = require("../middleware/jwt");
 const {Catch} = require("../utils/errors/Catch");
-const { isSuperAdmin } = require('../utils/isSuperAdmin');
 
 router.post('/', verifyToken, async (req, res) => {
     try {
-        if (await isSuperAdmin(req.userId)) {
-            const newRealm = new Realm(req.body);
-            const realmCreated = await newRealm.save();
-            const adminUser = new User({
-                email: '',
-                username: 'admin_' + realmCreated.name.replace(/\s+/g, '_').toLowerCase(),
-                firstname: 'admin',
-                lastname: 'admin',
-                password: 'admin',
-                role: 'admin',
-                realm: realmCreated._id,
-                state: 'active'
-            });
-            await adminUser.save();
-            res.status(201).json({realm: realmCreated, admin: adminUser});
-        }
+        const newRealm = new Realm(req.body);
+        const realmCreated = await newRealm.save();
+        const adminUser = new User({
+            email: 'admin_' + realmCreated.name.replace(/\s+/g, '_').toLowerCase() + '@default.com',
+            username: 'admin_' + realmCreated.name.replace(/\s+/g, '_').toLowerCase(),
+            firstname: 'admin',
+            lastname: 'admin',
+            password: 'admin',
+            role: 'admin',
+            realm: realmCreated._id,
+            state: 'active'
+        });
+        await adminUser.save();
+        const realmObj = realmCreated.toObject();
+        realmObj.users = [adminUser];
+        res.status(201).json(realmObj);
     } catch (error) {
-        Catch(error,res);
+        Catch(error, res);
     }
 });
 
 router.get('/', verifyToken, async (req, res) => {
     try {
-        if (await isSuperAdmin(req.userId)) {
-            const realms = await Realm.find();
-            res.status(200).json(realms);
-        } else {
-            return res.status(403).json({message: 'You do not have permission to view realms'});
-        }
+        const realms = await Realm.find();
+        const realmsWithUsers = await Promise.all(
+            realms.map(async (realm) => {
+                const users = await User.find({ realm: realm._id }).select('-password -__v');
+                return { ...realm.toObject(), users };
+            })
+        );
+        res.status(200).json(realmsWithUsers);
     } catch (error) {
-        Catch(error);
+        Catch(error, res);
     }
 });
 
 router.get('/:id', verifyToken, async (req, res) => {
     try {
-        if (await isSuperAdmin(req.userId)) {
-            const realm = await Realm.findById(req.params.id);
-            if (!realm) {
-                return res.status(404).json({message: 'Realm not found'});
-            }
-            res.status(200).json(realm);
-        } else {
-            return res.status(403).json({message: 'You do not have permission to view this realm'});
+        const realm = await Realm.findById(req.params.id)
+        if (!realm) {
+            return res.status(404).json({message: 'Realm not found'});
         }
+        res.status(200).json(realm);
+
     } catch (error) {
         Catch(error);
     }
@@ -63,34 +61,29 @@ router.get('/:id', verifyToken, async (req, res) => {
 
 router.put('/:id', verifyToken, async (req, res) => {
     try {
-        if (await isSuperAdmin(req.userId)) {
-            const realm = await Realm.findByIdAndUpdate(req.params.id, req.body, {new: true});
-            if (!realm) {
-                return res.status(404).json({message: 'Realm not found'});
-            }
-            res.status(200).json(realm);
+        let realm = await Realm.findByIdAndUpdate(req.params.id, req.body, {new: true});
+        if (!realm) {
+            return res.status(404).json({message: 'Realm not found'});
         }
-        else {
-            return res.status(403).json({message: 'You do not have permission to update this realm'});
-        }
+        const users = await User.find({realm: realm._id}).select('-password -__v');
+        realm = realm.toObject();
+        realm.users = users;
+        res.status(200).json(realm);
     } catch (error) {
-        Catch(error);
+        Catch(error, res);
     }
 });
 
 router.delete('/:id', verifyToken, async (req, res) => {
     try {
-        if (await isSuperAdmin(req.userId)) {
-            const realm = await Realm.findByIdAndDelete(req.params.id);
-            if (!realm) {
-                return res.status(404).json({message: 'Realm not found'});
-            }
-            await User.deleteMany({realm: req.params.id});
-            await Task.deleteMany({realm: req.params.id});
-            res.status(200).json({message: 'Realm deleted successfully'});
-        } else {
-            return res.status(403).json({message: 'You do not have permission to delete this realm'});
+        const realm = await Realm.findByIdAndDelete(req.params.id);
+        if (!realm) {
+            return res.status(404).json({message: 'Realm not found'});
         }
+        await User.deleteMany({realm: req.params.id});
+        await Task.deleteMany({realm: req.params.id});
+        res.status(200).json({message: 'Realm deleted successfully'});
+
     } catch (error) {
         Catch(error);
     }
@@ -98,12 +91,9 @@ router.delete('/:id', verifyToken, async (req, res) => {
 
 router.get('/:id/users', verifyToken, async (req, res) => {
     try {
-        if (await isSuperAdmin(req.userId)) {
-            const users = await User.find({realm: req.params.id});
-            res.status(200).json(users);
-        } else {
-            return res.status(403).json({message: 'You do not have permission to view users in this realm'});
-        }
+        const users = await User.find({realm: req.params.id});
+        res.status(200).json(users);
+
     } catch (error) {
         Catch(error);
     }

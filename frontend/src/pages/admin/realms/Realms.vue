@@ -1,19 +1,80 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import {onMounted, ref} from 'vue'
 import RealmList from './RealmList.vue'
 import RealmUsers from './RealmUsers.vue'
+import RealmForm from './RealmForm.vue'
+import {Realm} from "@/utils/interfaces/Realm";
+import Request from "@/api/Request";
 
-const realms = ref([
-  { id: 1, name: 'Realm 1', users: [{ id: 1, firstname: 'Alice', lastname: 'Smith' }, { id: 2, firstname: 'Bob', lastname: 'Johnson' }] },
-  { id: 2, name: 'Realm 2', users: [{ id: 3, firstname: 'Charlie', lastname: 'Brown' }, { id: 4, firstname: 'David', lastname: 'Williams' }] },
-  { id: 3, name: 'Realm 3', users: [] },
-  { id: 4, name: 'Realm 4', users: [{ id: 5, firstname: 'Eve', lastname: 'Davis' }] },
-])
+const realms = ref<Realm[]>([])
+const selectedRealm = ref<Realm | null>(null)
+const isAdding = ref(false)
+const request = Request()
 
-const selectedRealm = ref(realms.value[0])
+onMounted(async () => {
+  try {
+    const response = await request.get('/realm')
+    realms.value = response.data
+    if (realms.value.length > 0) {
+      selectedRealm.value = realms.value[0];
+    }
+  } catch (error) {
+    console.error('Failed to fetch realms:', error)
+  }
+})
 
 function handleSelectRealm(realm: any) {
   selectedRealm.value = realm
+  isAdding.value = false
+}
+
+function handleAddOrEditRealm(realm: Realm) {
+  if (realm.id) {
+    request.put(`/realm/${realm.id}`, realm)
+      .then(response => {
+        const index = realms.value.findIndex(r => r._id === response._id)
+        if (index !== -1) {
+          realms.value[index] = response
+          selectedRealm.value = response
+          isAdding.value = false
+          const tabs = document.querySelectorAll('input[name="my_tabs"]')
+          if (tabs.length > 0) {
+            tabs[0].checked = true
+          }
+        } else {
+          console.error('Realm not found in the list:', realm.id)
+        }
+      })
+      .catch(error => console.error('Failed to update realm:', error))
+  } else {
+    request.post('/realm', realm)
+      .then(response => {
+        debugger
+        realms.value.push(response)
+        selectedRealm.value = response
+        isAdding.value = false
+        selectedRealm.value = response
+        const tabs = document.querySelectorAll('input[name="my_tabs"]')
+        if (tabs.length > 0) {
+          tabs[0].checked = true
+        }
+      })
+      .catch(error => console.error('Failed to add realm:', error))
+  }
+}
+
+function handleCancel() {
+  isAdding.value = false
+  selectedRealm.value = realms.value.length > 0 ? realms.value[0] : null
+}
+
+function handleAddRealm() {
+  isAdding.value = true
+  selectedRealm.value = null
+}
+
+function handleImpersonate(userId: string) {
+  //TODO
 }
 </script>
 
@@ -24,16 +85,28 @@ function handleSelectRealm(realm: any) {
           :realms="realms"
           :selected-realm="selectedRealm"
           @select="handleSelectRealm"
+          @add="handleAddRealm"
       />
     </div>
     <div class="md:w-2/3 w-full">
-      <RealmUsers :realm="selectedRealm" />
+      <div v-if="isAdding">
+        <div class="tabs tabs-lift h-full">
+          <input type="radio" name="my_tabs" class="tab font-bold" aria-label="Ajout de realm" checked="checked"/>
+          <div class="tab-content bg-base-100 border-base-300 p-6">
+            <RealmForm :realm="null" @save="handleAddOrEditRealm" @cancel="handleCancel" />
+          </div>
+        </div>
+      </div>
+      <div v-else class="tabs tabs-lift h-full">
+        <input type="radio" name="my_tabs" class="tab font-bold" aria-label="Utilisateurs" checked="checked"/>
+        <div class="tab-content bg-base-100 border-base-300 p-6">
+          <RealmUsers v-if="selectedRealm" :realm="selectedRealm" @impersonate="handleImpersonate"/>
+        </div>
+        <input type="radio" name="my_tabs" class="tab font-bold" aria-label="Paramètres"/>
+        <div class="tab-content bg-base-100 border-base-300 p-6">
+          <RealmForm :realm="selectedRealm" @save="handleAddOrEditRealm"/>
+        </div>
+      </div>
     </div>
   </div>
 </template>
-
-<style scoped>
-div[h-full] {
-  min-height: 60vh;
-}
-</style>
