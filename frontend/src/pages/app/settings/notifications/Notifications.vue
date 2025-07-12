@@ -38,7 +38,7 @@ const handleSwitch = async (notification) => {
 <template>
   <form class="flex flex-col p-4 bg-base-200 rounded-lg">
     <h3 class="text-xl font-semibold mb-6">{{ t('settings.category.notifications') }}</h3>
-    <div v-for="(notification, index) in notifications" :key="notification.name" class="group">
+    <div v-for="(notification, index) in notifications" :key="notification.name" class="group mb-4">
       <div class="flex items-center justify-between">
         <div class="flex flex-col">
           <h4 class="text-base font-bold">
@@ -54,15 +54,15 @@ const handleSwitch = async (notification) => {
               class="hidden"
           />
           <span class="swap-on">
-                      <span class="inline-block w-10 h-6 bg-primary rounded-full relative transition">
-                        <span class="absolute left-5 top-0.5 w-5 h-5 bg-white rounded-full shadow transition"></span>
-                      </span>
-                    </span>
+            <span class="inline-block w-10 h-6 bg-primary rounded-full relative transition">
+              <span class="absolute left-5 top-0.5 w-5 h-5 bg-white rounded-full shadow transition"></span>
+            </span>
+          </span>
           <span class="swap-off">
-                      <span class="inline-block w-10 h-6 bg-gray-300 rounded-full relative transition">
-                        <span class="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow transition"></span>
-                      </span>
-                    </span>
+            <span class="inline-block w-10 h-6 bg-gray-300 rounded-full relative transition">
+              <span class="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow transition"></span>
+            </span>
+          </span>
         </label>
       </div>
       <div class="border-b border-base-300 py-4" v-if="index < notifications.length - 1"></div>
