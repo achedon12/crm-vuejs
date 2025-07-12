@@ -13,9 +13,9 @@ router.post('/', verifyToken, async (req, res) => {
         const newRealm = new Realm(req.body);
         const realmCreated = await newRealm.save();
         const adminUser = new User({
-            email: 'admin_' + realmCreated.name.replace(/\s+/g, '_').toLowerCase() + '@default.com',
-            username: 'admin_' + realmCreated.name.replace(/\s+/g, '_').toLowerCase(),
-            firstname: 'admin',
+            email: 'default_admin_' + realmCreated.name.replace(/\s+/g, '_').toLowerCase() + '@default.com',
+            username: 'default_admin_' + realmCreated.name.replace(/\s+/g, '_').toLowerCase(),
+            firstname: 'default',
             lastname: 'admin',
             password: 'admin',
             role: 'admin',

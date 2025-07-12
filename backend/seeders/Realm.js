@@ -12,9 +12,9 @@ const seedRealm = async () => {
         const realm = new Realm(realmData);
         await realm.save();
         const adminUser = new User({
-            email: 'admin@' + realm.name.replace(/\s+/g, '_').toLowerCase() + '.com',
-            username: 'admin_' + realm.name.replace(/\s+/g, '_').toLowerCase(),
-            firstname: 'admin',
+            email: 'default_admin@' + realm.name.replace(/\s+/g, '_').toLowerCase() + '@default.com',
+            username: 'default_admin_' + realm.name.replace(/\s+/g, '_').toLowerCase(),
+            firstname: 'default',
             lastname: 'admin',
             password: 'admin',
             role: 'admin',
