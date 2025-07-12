@@ -7,99 +7,105 @@ const Realm = require('../models/Realm');
 const sendMail = require("../utils/mailer");
 const verifyToken = require("../middleware/jwt");
 const {Catch} = require("../utils/errors/Catch");
+const { isSuperAdmin } = require('../utils/isSuperAdmin');
 
-router.post('/create', verifyToken, async (req, res) => {
+router.post('/', verifyToken, async (req, res) => {
     try {
-        const newRealm = new Realm(req.body);
-
-        if (req.user.isSuperAdmin && !req.body.administrators) {
-            return res.status(400).json({message: 'Super Admins must assign at least one administrator to the realm'});
+        if (await isSuperAdmin(req.userId)) {
+            const newRealm = new Realm(req.body);
+            const realmCreated = await newRealm.save();
+            const adminUser = new User({
+                email: '',
+                username: 'admin_' + realmCreated.name.replace(/\s+/g, '_').toLowerCase(),
+                firstname: 'admin',
+                lastname: 'admin',
+                password: 'admin',
+                role: 'admin',
+                realm: realmCreated._id,
+                state: 'active'
+            });
+            await adminUser.save();
+            res.status(201).json({realm: realmCreated, admin: adminUser});
         }
-        if (!req.user.isSuperAdmin && !req.body.administrators) {
-            newRealm.administrators = [req.user.id];
-        }
-        const realmCreated = await newRealm.save();
-        res.status(201).json(realmCreated);
     } catch (error) {
         Catch(error,res);
     }
 });
 
-router.get('/list', verifyToken, async (req, res) => {
+router.get('/', verifyToken, async (req, res) => {
     try {
-        let realms;
-        if (req.user.isSuperAdmin) {
-            realms = await Realm.find();
+        if (await isSuperAdmin(req.userId)) {
+            const realms = await Realm.find();
+            res.status(200).json(realms);
         } else {
-            realms = await Realm.find({administrators: req.user.id});
+            return res.status(403).json({message: 'You do not have permission to view realms'});
         }
-        res.status(200).json(realms);
     } catch (error) {
-        res.status(400).json({message: error.message});
-    }
-});
-
-router.put('/:id', verifyToken, async (req, res) => {
-    try {
-        const realm = await Realm.findById(req.params.id);
-
-        if (!realm) {
-            return res.status(404).json({message: 'Realm not found'});
-        }
-
-        // Check if the user has permission to update the realm
-        if (!req.user.isSuperAdmin && !realm.administrators.includes(req.user.id)) {
-            return res.status(403).json({message: 'You do not have permission to update this realm'});
-        }
-
-        realm.set(req.body);
-        const realmUpdated = await realm.save();
-        res.status(200).json(realmUpdated);
-    } catch (error) {
-        res.status(400).json({message: error.message});
+        Catch(error);
     }
 });
 
 router.get('/:id', verifyToken, async (req, res) => {
     try {
-        const realm = await Realm.findById(req.params.id);
-
-        if (!realm) {
-            return res.status(404).json({message: 'Realm not found'});
-        }
-
-        // Check if the user has permission to view the realm
-        if (!req.user.isSuperAdmin && !realm.administrators.includes(req.user.id)) {
+        if (await isSuperAdmin(req.userId)) {
+            const realm = await Realm.findById(req.params.id);
+            if (!realm) {
+                return res.status(404).json({message: 'Realm not found'});
+            }
+            res.status(200).json(realm);
+        } else {
             return res.status(403).json({message: 'You do not have permission to view this realm'});
         }
-
-        res.status(200).json(realm);
     } catch (error) {
-        res.status(400).json({message: error.message});
+        Catch(error);
+    }
+});
+
+router.put('/:id', verifyToken, async (req, res) => {
+    try {
+        if (await isSuperAdmin(req.userId)) {
+            const realm = await Realm.findByIdAndUpdate(req.params.id, req.body, {new: true});
+            if (!realm) {
+                return res.status(404).json({message: 'Realm not found'});
+            }
+            res.status(200).json(realm);
+        }
+        else {
+            return res.status(403).json({message: 'You do not have permission to update this realm'});
+        }
+    } catch (error) {
+        Catch(error);
     }
 });
 
 router.delete('/:id', verifyToken, async (req, res) => {
     try {
-        const realm = await Realm.findById(req.params.id);
-
-        if (!realm) {
-            return res.status(404).json({message: 'Realm not found'});
-        }
-
-        // Check if the user has permission to delete the realm
-        if (!req.user.isSuperAdmin && !realm.administrators.includes(req.user.id)) {
+        if (await isSuperAdmin(req.userId)) {
+            const realm = await Realm.findByIdAndDelete(req.params.id);
+            if (!realm) {
+                return res.status(404).json({message: 'Realm not found'});
+            }
+            await User.deleteMany({realm: req.params.id});
+            await Task.deleteMany({realm: req.params.id});
+            res.status(200).json({message: 'Realm deleted successfully'});
+        } else {
             return res.status(403).json({message: 'You do not have permission to delete this realm'});
         }
-
-        // force delete tasks and users associated with the realm
-        await Task.deleteMany({realm: realm._id});
-        await User.deleteMany({realm: realm._id});
-
-        await Realm.findByIdAndDelete(req.params.id);
-        res.status(200).json({message: 'Realm deleted successfully'});
     } catch (error) {
-        res.status(400).json({message: error.message});
+        Catch(error);
+    }
+});
+
+router.get('/:id/users', verifyToken, async (req, res) => {
+    try {
+        if (await isSuperAdmin(req.userId)) {
+            const users = await User.find({realm: req.params.id});
+            res.status(200).json(users);
+        } else {
+            return res.status(403).json({message: 'You do not have permission to view users in this realm'});
+        }
+    } catch (error) {
+        Catch(error);
     }
 });
 

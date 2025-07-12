@@ -8,20 +8,16 @@ const bcrypt = require('bcrypt');
 const sendMail = require("../utils/mailer");
 const verifyToken = require("../middleware/jwt");
 const {Catch} = require("../utils/errors/Catch");
+const {isSuperAdmin} = require("../utils/isSuperAdmin");
 
 router.post('/create', verifyToken, async (req, res) => {
     try {
-        if (!req.user.isSuperAdmin && req.user.role !== 'admin') {
+        if (!req.user.role || (req.user.role !== 'admin')) {
             return res.status(403).json({message: 'You do not have permission to create users'});
         }
-        if (!req.user.isSuperAdmin && (req.body.role && req.body.role === 'admin')) {
-            return res.status(403).json({message: 'You can only create users with the role "user"'});
-        }
         const newUser = new User(req.body);
-
         const temporaryPassword = Math.random().toString(36).slice(-8);
         newUser.password = await bcrypt.hash(temporaryPassword, 10);
-
         const userRegistered = await newUser.save();
 
         res.status(201).json(userRegistered)
@@ -37,41 +33,14 @@ router.post('/create', verifyToken, async (req, res) => {
     }
 });
 
-router.put('/:id', verifyToken, async (req, res) => {
+router.get('/', verifyToken, async (req, res) => {
     try {
-        if (!req.user.isSuperAdmin && req.user.role !== 'admin') {
-            return res.status(403).json({message: 'You do not have permission to update users'});
+        if (await isSuperAdmin(req.userId) || (req.user.role && req.user.role === 'admin')) {
+            const users = await User.find().populate('realm');
+            res.status(200).json(users);
+        } else {
+            return res.status(403).json({message: 'You do not have permission to view users'});
         }
-
-        // check if the user is trying to update a user in a different realm
-        if (!req.user.isSuperAdmin) {
-            const userToUpdate = await User.findById(req.params.id);
-            if (!userToUpdate) {
-                return res.status(404).json({message: 'User not found'});
-            }
-            const userRealm = await Realm.find({administrators: req.user.id});
-            const userRealmIds = userRealm.map(realm => realm._id.toString());
-            if (!userRealmIds.includes(userToUpdate.realm.toString())) {
-                return res.status(403).json({message: 'You do not have permission to update this user'});
-            }
-        }
-
-        const updateData = {
-            ...req.body,
-            updatedAt: new Date()
-        };
-
-        const user = await User.findByIdAndUpdate(
-            req.params.id,
-            updateData,
-            {new: true}
-        );
-
-        if (!user) {
-            return res.status(404).json({message: 'User not found'});
-        }
-
-        res.status(200).json(user);
     } catch (error) {
         Catch(error, res);
     }
@@ -79,39 +48,56 @@ router.put('/:id', verifyToken, async (req, res) => {
 
 router.get('/:id', verifyToken, async (req, res) => {
     try {
-        if (!req.user.isSuperAdmin && req.user.role !== 'admin' && req.user.id !== req.params.id) {
+        if (await isSuperAdmin(req.userId) || (req.user.role && req.user.role === 'admin')) {
+            const user = await User.findById(req.params.id).populate('realm');
+            if (!user) {
+                return res.status(404).json({message: 'User not found'});
+            }
+            res.status(200).json(user);
+        } else {
             return res.status(403).json({message: 'You do not have permission to view this user'});
         }
-        const user = await User.findById(req.params.id);
+    } catch (error) {
+        Catch(error);
+    }
+});
 
+router.put('/:id', verifyToken, async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
         if (!user) {
             return res.status(404).json({message: 'User not found'});
         }
 
-        res.status(200).json(user);
+        if (req.userId !== req.params.id && !(req.user.role && req.user.role === 'admin' && user.realm && user.realm.equals(req.user.realm))) {
+            return res.status(403).json({message: 'You do not have permission to update this user'});
+        }
+
+        Object.assign(user, req.body);
+        user.updatedAt = Date.now();
+        const updatedUser = await user.save();
+        res.status(200).json(updatedUser);
     } catch (error) {
-        res.status(400).json({message: error.message});
+        Catch(error);
     }
 });
 
 router.delete('/:id', verifyToken, async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
-
         if (!user) {
             return res.status(404).json({message: 'User not found'});
         }
 
-        await Task.updateMany(
-            {user: user._id, state: {$nin: ['done', 'archived']}},
-            {$set: {assigned: null}}
-        );
+        if (req.userId !== req.params.id && !(req.user.role && req.user.role === 'admin' && user.realm && user.realm.equals(req.user.realm))) {
+            return res.status(403).json({message: 'You do not have permission to delete this user'});
+        }
 
-        user.state = 'inactive';
-        await user.save();
-        res.status(200).json({message: 'User deleted'});
+        await Task.deleteMany({assignedTo: user._id});
+        await user.remove();
+        res.status(200).json({message: 'User deleted successfully'});
     } catch (error) {
-        res.status(400).json({message: error.message});
+        Catch(error);
     }
 });
 

@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const User = require('./User');
 
 const RealmSchema = new mongoose.Schema({
     name: {
@@ -20,22 +19,6 @@ const RealmSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
-    isPublic: {
-        type: Boolean,
-        default: false
-    },
-    administrators: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true,
-        validate: {
-            validator: async function(adminIds) {
-                const admins = await User.find({ _id: { $in: adminIds } });
-                return admins.every(user => user.role === 'admin');
-            },
-            message: 'Tous les administrateurs doivent avoir le rôle admin.'
-        }
-    }],
     createdAt: {
         type: Date,
         default: Date.now
