@@ -21,6 +21,7 @@ app.use('/api/auth', require('./routes/Auth'));
 app.use('/api/user', require('./routes/User'));
 app.use('/api/realm', require('./routes/Realm'));
 app.use('/api/task', require('./routes/Task'));
+app.use('/api/notification', require('./routes/Notification'));
 
 app.listen(process.env.PORT, () => {
     console.log(`Server is running on port ${process.env.PORT}`);

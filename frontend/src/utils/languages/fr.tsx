@@ -11,7 +11,8 @@ const FRMessages = {
         title: 'Paramètres',
         notifications: {
             title: 'Notifications',
-            description: 'Gérez vos préférences de notification.'
+            description: 'Gérez vos préférences de notification.',
+            switchSuccess: 'Paramètres de notification mis à jour avec succès.',
         },
         category: {
             theme: 'Thème',

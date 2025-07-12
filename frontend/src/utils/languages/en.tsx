@@ -11,7 +11,8 @@ const ENMessages = {
         title: 'Settings',
         notifications: {
             title: 'Notifications',
-            description: 'Manage your notification preferences.'
+            description: 'Manage your notification preferences.',
+            switchSuccess: 'Successfully updated notification settings.',
         },
         category: {
             theme: 'Theme',

@@ -3,12 +3,14 @@ const express = require('express')
 const router = express.Router();
 const User = require('../models/User');
 const Task = require('../models/Task');
+const Notification = require('../models/Notification');
 const Realm = require('../models/Realm');
 const bcrypt = require('bcrypt');
 const sendMail = require("../utils/mailer");
 const verifyToken = require("../middleware/jwt");
 const {Catch} = require("../utils/errors/Catch");
 const {isSuperAdmin} = require("../utils/isSuperAdmin");
+const {Notifications} = require("../utils/notifications/UserNotification");
 
 router.post('/create', verifyToken, async (req, res) => {
     try {
@@ -21,6 +23,15 @@ router.post('/create', verifyToken, async (req, res) => {
         const userRegistered = await newUser.save();
 
         res.status(201).json(userRegistered)
+
+        // create user notifications
+        Notifications.forEach(notification => {
+            const newNotification = new Notification({
+                user: userRegistered._id,
+                message: notification.message,
+            });
+            newNotification.save()
+        });
 
         await sendMail(req.body.email, 'Account Creation', 'registration.html', {
             user: req.body.firstname + ' ' + req.body.lastname,
