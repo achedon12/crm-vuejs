@@ -71,6 +71,8 @@ const router = createRouter({
                 const authStore = useAuthStore()
                 if (!authStore.user || !authStore.token) {
                     next({name: 'login'})
+                } else if(authStore.isSuperAdmin && !authStore.isSwitched) {
+                    next({name: 'admin'})
                 } else {
                     next()
                 }
