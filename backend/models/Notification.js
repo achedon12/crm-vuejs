@@ -14,6 +14,10 @@ const NotificationSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
+    action: {
+        type: String,
+        required: true
+    },
     createdAt: {
         type: Date,
         default: Date.now

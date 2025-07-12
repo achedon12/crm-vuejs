@@ -6,6 +6,7 @@ const Realm = require('../models/Realm');
 const sendMail = require("../utils/mailer");
 const verifyToken = require("../middleware/jwt");
 const {Catch} = require("../utils/errors/Catch");
+const {ensureUserNotifications} = require("../utils/notifications/UserNotification");
 
 router.post('/create', verifyToken, async (req, res) => {
     try {
@@ -17,13 +18,14 @@ router.post('/create', verifyToken, async (req, res) => {
             ...req.body,
             realm: req.user.realm
         }
-        console.log(data, req.user);
 
         const newTask = new Task(data);
 
         const taskRegistered = await newTask.save();
 
-        res.status(201).json(taskRegistered);
+        await ensureUserNotifications(req.user.realm, 'task_created');
+
+        return res.status(201).json(taskRegistered);
     } catch (error) {
         Catch(error, res);
     }
@@ -50,6 +52,18 @@ router.put('/:id', verifyToken, async (req, res) => {
         };
 
         const updatedTask = await Task.findByIdAndUpdate(req.params.id, updateData, {new: true});
+
+        if (updatedTask.assigned && updatedTask.assigned.toString() == req.user._id.toString()) {
+            await ensureUserNotifications(req.user.realm, 'task_assigned');
+        } else if (updatedTask.state === 'in_progress') {
+            await ensureUserNotifications(req.user.realm, 'task_started');
+        } else if (updatedTask.state === 'done') {
+            await ensureUserNotifications(req.user.realm, 'task_completed');
+        } else if (updatedTask.state === 'archived') {
+            await ensureUserNotifications(req.user.realm, 'task_archived');
+        } else {
+            await ensureUserNotifications(req.user.realm, 'task_updated');
+        }
 
         res.status(200).json(updatedTask);
     } catch (error) {
@@ -109,6 +123,8 @@ router.delete('/:id', verifyToken, async (req, res) => {
         }
 
         await Task.findByIdAndDelete(req.params.id);
+
+        await ensureUserNotifications(req.user.realm, 'task_deleted');
 
         res.status(200).json({message: 'Task deleted successfully'});
     } catch (error) {

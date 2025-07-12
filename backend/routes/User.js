@@ -37,7 +37,7 @@ router.post('/create', verifyToken, async (req, res) => {
             user: req.body.firstname + ' ' + req.body.lastname,
             email: req.body.email,
             password: temporaryPassword,
-            app: process.env.APP_URL + '/auth/login/'
+            app: process.env.APP_URL + '/login/'
         });
     } catch (error) {
         Catch(error, res);

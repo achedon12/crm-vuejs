@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Notification</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@2.51.5/dist/full.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="max-w-lg mx-auto mt-10 p-8 bg-white rounded-xl shadow-lg">
+        <div class="flex items-center space-x-4 mb-6">
+            <div class="avatar">
+                <div class="w-16 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+                    <img src="https://cdn-icons-png.flaticon.com/512/1827/1827344.png" alt="Notification Icon"/>
+                </div>
+            </div>
+            <div>
+                <h1 class="text-2xl font-bold text-primary">Nouvelle Notification</h1>
+            </div>
+        </div>
+        <p class="mb-4 text-gray-700">Hello <span class="font-semibold text-primary">{{user}}</span>,</p>
+        <div class="mb-4">
+            <div class="alert alert-info">
+                <span>{{message}}</span>
+            </div>
+        </div>
+        <a href="{{app_url}}" class="btn btn-primary w-full mt-4">Open App</a>
+        <div class="divider mt-8"></div>
+        <p class="text-xs text-gray-400 text-center">If you did not request this notification, please ignore this email.</p>
+    </div>
+</body>
+</html>

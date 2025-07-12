@@ -13,6 +13,7 @@ router.get('/list/:userId', verifyToken, async (req, res) => {
                 await Notification.create({
                     user: req.params.userId,
                     message: notif.message,
+                    action: notif.action,
                 });
             }
         }
