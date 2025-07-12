@@ -4,7 +4,13 @@ const UserSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
-        unique: true
+        unique: true,
+        validate: {
+            validator: function(v) {
+                return /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/.test(v);
+            },
+            message: props => `${props.value} is not a valid email address!`
+        }
     },
     username: {
         type: String,
@@ -27,6 +33,18 @@ const UserSchema = new mongoose.Schema({
         type: String,
         enum: ['user', 'admin'],
         default: 'user'
+    },
+    realm: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Realm',
+        required: function() {
+            return this.role === 'user';
+        }
+    },
+    state: {
+        type: String,
+        enum: ['active', 'inactive'],
+        default: 'active'
     },
     createdAt: {
         type: Date,

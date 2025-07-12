@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const State = require('./State');
 
 const TaskSchema = new mongoose.Schema({
     title: {

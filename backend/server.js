@@ -18,6 +18,8 @@ app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api/auth', require('./routes/Auth'));
+app.use('/api/user', require('./routes/User'));
+app.use('/api/realm', require('./routes/Realm'));
 
 app.listen(process.env.PORT, () => {
     console.log(`Server is running on port ${process.env.PORT}`);
