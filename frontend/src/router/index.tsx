@@ -35,7 +35,7 @@ const router = createRouter({
             children: [
                 {
                     name: 'login',
-                    path: 'login',
+                    path: '',
                     component: Login
                 },
             ]
