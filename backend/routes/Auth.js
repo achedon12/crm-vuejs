@@ -31,7 +31,7 @@ router.post('/login', async (req, res) => {
             });
         }
 
-        if (!user || user.state !== 'active') {
+        if (!user || (!isSuperAdmin && user.state !== 'active')) {
             return res.status(404).json({message: 'User not found'});
         }
 
