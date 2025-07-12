@@ -69,6 +69,10 @@ function handleAddOrEditRealm(realm: Realm) {
 function handleCancel() {
   isAdding.value = false
   selectedRealm.value = realms.value.length > 0 ? realms.value[0] : null
+  const tabs = document.querySelectorAll('input[name="my_tabs"]')
+  if (tabs.length > 0) {
+    tabs[0].checked = true
+  }
 }
 
 function handleAddRealm() {
@@ -80,6 +84,23 @@ function handleImpersonate(userId: string) {
   const user = selectedRealm.value?.users.find(u => u._id === userId)
   authStore.impersonate(user)
   router.push({ name: 'home' })
+}
+
+function handleDeleteRealm(realmId: string) {
+  request.del(`/realm/${realmId}`)
+    .then(() => {
+      realms.value = realms.value.filter(r => r._id !== realmId)
+      if (realms.value.length > 0) {
+        selectedRealm.value = realms.value[0]
+      } else {
+        selectedRealm.value = null
+      }
+      const tabs = document.querySelectorAll('input[name="my_tabs"]')
+      if (tabs.length > 0) {
+        tabs[0].checked = true
+      }
+    })
+    .catch(error => console.error('Failed to delete realm:', error))
 }
 </script>
 
@@ -98,7 +119,7 @@ function handleImpersonate(userId: string) {
         <div class="tabs tabs-lift h-full">
           <input type="radio" name="my_tabs" class="tab font-bold" aria-label="Ajout de realm" checked="checked"/>
           <div class="tab-content bg-base-100 border-base-300 p-6">
-            <RealmForm :realm="null" @save="handleAddOrEditRealm" @cancel="handleCancel" />
+            <RealmForm :realm="null" @save="handleAddOrEditRealm" @cancel="handleCancel"/>
           </div>
         </div>
       </div>
@@ -109,7 +130,7 @@ function handleImpersonate(userId: string) {
         </div>
         <input type="radio" name="my_tabs" class="tab font-bold" aria-label="Paramètres"/>
         <div class="tab-content bg-base-100 border-base-300 p-6">
-          <RealmForm :realm="selectedRealm" @save="handleAddOrEditRealm"/>
+          <RealmForm :realm="selectedRealm" @save="handleAddOrEditRealm" @cancel="handleCancel" @delete="handleDeleteRealm"/>
         </div>
       </div>
     </div>
