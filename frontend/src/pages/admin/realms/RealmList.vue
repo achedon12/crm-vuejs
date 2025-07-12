@@ -38,7 +38,7 @@ function addRealm() {
           class="input input-bordered w-full mb-4"
       />
       <ul class="list">
-        <li v-for="realm in filteredRealms" :key="realm._id" class="list-row cursor-pointer font-bold"
+        <li v-for="realm in filteredRealms" :key="realm._id" class="list-row cursor-pointer font-bold hover:text-primary"
             @click="selectRealm(realm)" :class="{'bg-base-100 text-primary': realm._id === props.selectedRealm?._id}">
           {{ realm.name }}
         </li>
