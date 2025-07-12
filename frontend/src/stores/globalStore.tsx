@@ -4,6 +4,7 @@ export const useGlobalStore = defineStore('global', {
     state: () => ({
         language: 'en',
         isSidebarMinimized: false as boolean,
+        theme: 'light' as 'light' | 'dark',
     }),
     persist: true,
     actions: {
@@ -15,6 +16,9 @@ export const useGlobalStore = defineStore('global', {
         },
         toggleSidebar() {
             this.isSidebarMinimized = !this.isSidebarMinimized;
+        },
+        setTheme(theme: 'light' | 'dark') {
+            this.theme = theme;
         },
     }
 })
