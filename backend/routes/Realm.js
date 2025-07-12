@@ -38,7 +38,7 @@ router.get('/', verifyToken, async (req, res) => {
         const realms = await Realm.find();
         const realmsWithUsers = await Promise.all(
             realms.map(async (realm) => {
-                const users = await User.find({ realm: realm._id }).select('-password -__v');
+                const users = await User.find({ realm: realm._id }).select('-password -__v').populate('realm');
                 return { ...realm.toObject(), users };
             })
         );

@@ -6,7 +6,6 @@ import {useAuthStore} from "@/stores/authStore";
 const request = Request()
 const authStore = useAuthStore()
 
-
 const columns = [
   {key: 'priority', label: 'Priorité'},
   {key: 'title', label: 'Titre'},
@@ -19,7 +18,6 @@ const columns = [
 ];
 
 const fetchTasks = async () => {
-  console.log(authStore)
   const res = await request.get('/task/realm/' + authStore.realm._id)
   return res.data;
 };
