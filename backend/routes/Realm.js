@@ -21,7 +21,7 @@ router.post('/create', verifyToken, async (req, res) => {
         const realmCreated = await newRealm.save();
         res.status(201).json(realmCreated);
     } catch (error) {
-        Catch(error);
+        Catch(error,res);
     }
 });
 

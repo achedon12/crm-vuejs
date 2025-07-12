@@ -40,7 +40,8 @@ router.post('/login', async (req, res) => {
                 email: user.email,
                 role: user.role,
                 id: user._id,
-                isSuperAdmin
+                isSuperAdmin,
+                realm: isSuperAdmin ? null : user.realm,
             }, process.env.JWT_SECRET);
 
             res.status(200).json({token, user, isSuperAdmin});

@@ -33,7 +33,7 @@ router.post('/create', verifyToken, async (req, res) => {
             app: process.env.APP_URL + '/auth/login/'
         });
     } catch (error) {
-        Catch(error);
+        Catch(error, res);
     }
 });
 
@@ -73,7 +73,7 @@ router.put('/:id', verifyToken, async (req, res) => {
 
         res.status(200).json(user);
     } catch (error) {
-        Catch(error);
+        Catch(error, res);
     }
 });
 

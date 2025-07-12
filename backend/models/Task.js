@@ -12,7 +12,7 @@ const TaskSchema = new mongoose.Schema({
     assigned: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true
+        default: null
     },
     state: {
         type: String,
@@ -21,12 +21,10 @@ const TaskSchema = new mongoose.Schema({
     },
     startDate: {
         type: Date,
-        required: true,
         default: null
     },
     endDate: {
         type: Date,
-        required: false,
         default: null
     },
     dueDate: {
@@ -38,6 +36,11 @@ const TaskSchema = new mongoose.Schema({
         type: String,
         enum: ['low', 'medium', 'high', 'critical'],
         default: 'medium'
+    },
+    realm: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Realm',
+        required: true
     },
     createdAt: {
         type: Date,
