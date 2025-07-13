@@ -101,4 +101,31 @@ router.get('/:id/users', verifyToken, async (req, res) => {
     }
 });
 
+router.get('/statistics/:realmId/:userId', verifyToken, async (req, res) => {
+    try {
+        const tasks = await Task.find({realm: req.params.realmId});
+        const statistics = {
+            totalTasks: tasks.length,
+            completedTasks: tasks.filter(task => task.state === 'done').length,
+            inProgressTasks: tasks.filter(task => task.state === 'in_progress').length,
+            archivedTasks: tasks.filter(task => task.state === 'archived').length,
+            pendingTasks: tasks.filter(task => task.state === 'submitted').length,
+
+            myTotalTasks: tasks.filter(task => task.assigned && task.assigned.toString() === req.params.userId).length,
+            myCompletedTasks: tasks.filter(task => task.assigned && task.assigned.toString() === req.params.userId && task.state === 'done').length,
+            myInProgressTasks: tasks.filter(task => task.assigned && task.assigned.toString() === req.params.userId && task.state === 'in_progress').length,
+            myArchivedTasks: tasks.filter(task => task.assigned && task.assigned.toString() === req.params.userId && task.state === 'archived').length,
+            myPendingTasks: tasks.filter(task => task.assigned && task.assigned.toString() === req.params.userId && task.state === 'submitted').length,
+
+            myTasksOverLast3Months: tasks.filter(task => task.assigned && task.assigned.toString() === req.params.userId && new Date(task.createdAt) >= new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)),
+
+            usersOfMyRealm: await User.find({realm: req.params.realmId}).select('-password -__v')
+        };
+
+        res.status(200).json(statistics);
+    } catch (error) {
+        Catch(error, res);
+    }
+});
+
 module.exports = router;
