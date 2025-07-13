@@ -77,8 +77,7 @@ router.get('/realm/:realmId', verifyToken, async (req, res) => {
         if (!realm) {
             return res.status(404).json({message: 'Realm not found'});
         }
-        const tasks = await Task.find({realm: req.params.realmId});
-
+        const tasks = await Task.find({realm: req.params.realmId}).populate('assigned', '-password -__v')
         res.status(200).json(tasks);
     } catch (error) {
         Catch(error, res);

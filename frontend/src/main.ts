@@ -1,5 +1,7 @@
 import {createApp} from 'vue'
 import App from './App.vue'
+import PrimeVue from 'primevue/config';
+import Aura from '@primeuix/themes/aura';
 import Toast from "vue-toastification"
 import router from './router'
 import i18n from '@/utils/i18n.js'
@@ -16,5 +18,10 @@ app.use(pinia)
 app.use(router)
 app.use(i18n)
 app.use(Toast)
+app.use(PrimeVue, {
+    theme: {
+        preset: Aura
+    }
+});
 
 app.mount('#app')
