@@ -4,33 +4,45 @@ const Task = require('../models/Task');
 const { faker } = require('@faker-js/faker');
 const bcrypt = require("bcrypt");
 
+const roles = User.schema.path('role').enumValues;
+const userStates = User.schema.path('state').enumValues;
+const taskStates = Task.schema.path('state').enumValues;
+const priorities = Task.schema.path('priority').enumValues;
+
 const seedRealm = async () => {
     await Realm.deleteMany({});
     await User.deleteMany({});
     await Task.deleteMany({});
 
-    const realms = [
-        { name: 'Default Realm', description: 'Ceci est le realm par défaut.' },
-        { name: 'Test Realm', description: 'Ceci est un realm de test.' }
-    ];
+    const realms = Array.from({ length: 5 }, () => ({
+        name: faker.company.name(),
+        description: faker.company.catchPhrase()
+    }));
 
     for (const realmData of realms) {
         const realm = new Realm(realmData);
         await realm.save();
 
-        const adminUser = new User({
-            email: `default_admin_${realm.name.replace(/\s+/g, '_').toLowerCase()}@default.com`,
-            username: `default_admin_${realm.name.replace(/\s+/g, '_').toLowerCase()}`,
-            firstname: 'default',
-            lastname: 'admin',
-            password: await bcrypt.hash('admin', 10),
-            role: 'admin',
-            realm: realm._id,
-            state: 'active'
-        });
-        await adminUser.save();
+        for (let a = 0; a < 2; a++) {
+            const firstname = faker.person.firstName();
+            const lastname = faker.person.lastName();
+            const username = "admin " + faker.internet.username({ firstName: firstname, lastName: lastname }).toLowerCase();
+            const email = faker.internet.email({ firstName: firstname, lastName: lastname }).toLowerCase();
 
-        for (let i = 1; i <= 3; i++) {
+            const adminUser = new User({
+                email,
+                username,
+                firstname,
+                lastname,
+                password: await bcrypt.hash('admin', 10),
+                role: 'admin',
+                realm: realm._id,
+                state: 'active'
+            });
+            await adminUser.save();
+        }
+
+        for (let i = 0; i < 10; i++) {
             const firstname = faker.person.firstName();
             const lastname = faker.person.lastName();
             const username = faker.internet.username({ firstName: firstname, lastName: lastname }).toLowerCase();
@@ -42,23 +54,28 @@ const seedRealm = async () => {
                 firstname,
                 lastname,
                 password: await bcrypt.hash('password', 10),
-                role: 'user',
+                role: faker.helpers.arrayElement(roles),
                 realm: realm._id,
-                state: 'active'
+                state: faker.helpers.arrayElement(userStates)
             });
             await user.save();
 
-            for (let j = 1; j <= 5; j++) {
+            for (let j = 0; j < 10; j++) {
+                const startDate = faker.date.past();
+                const endDate = faker.date.future({ refDate: startDate });
+                const dueDate = faker.date.future({ refDate: startDate });
+
                 const task = new Task({
                     title: faker.lorem.sentence(),
                     description: faker.lorem.paragraph(),
                     assigned: user._id,
-                    state: 'submitted',
-                    priority: 'medium',
+                    state: faker.helpers.arrayElement(taskStates),
+                    priority: faker.helpers.arrayElement(priorities),
                     realm: realm._id,
-                    startDate: faker.date.past(),
-                    endDate: faker.date.future(),
-                    dueDate: faker.date.future(),
+                    startDate,
+                    endDate,
+                    dueDate,
+                    tags: faker.lorem.words({ min: 1, max: 4 }).split(' ')
                 });
                 await task.save();
             }
