@@ -24,7 +24,6 @@ export const useNotificationStore = defineStore('notification', {
             const authStore = useAuthStore();
 
             const response = await request.get(Urls.notification.list + `/${authStore.user?._id}`)
-            console.log('Fetching notifications:', response.data);
 
             if (response.status === 200) {
                 this.notifications = response.data;

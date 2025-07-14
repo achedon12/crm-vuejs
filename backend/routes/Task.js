@@ -39,7 +39,7 @@ router.put('/:id', verifyToken, async (req, res) => {
 
         const taskToUpdate = await Task.findById(req.params.id);
         if (!taskToUpdate) {
-            return res.status(404).json({message: 'Task not found'});
+            return res.status(404).json({error: 'Task not found'});
         }
 
         if (taskToUpdate.realm.toString() !== req.user.realm.toString()) {
@@ -75,7 +75,7 @@ router.get('/realm/:realmId', verifyToken, async (req, res) => {
     try {
         const realm = await Realm.findById(req.params.realmId);
         if (!realm) {
-            return res.status(404).json({message: 'Realm not found'});
+            return res.status(404).json({error: 'Realm not found'});
         }
         const tasks = await Task.find({realm: req.params.realmId}).populate('assigned', '-password -__v')
         res.status(200).json(tasks);
@@ -88,7 +88,7 @@ router.get('/:id', verifyToken, async (req, res) => {
     try {
         const task = await Task.findById(req.params.id);
         if (!task) {
-            return res.status(404).json({message: 'Task not found'});
+            return res.status(404).json({error: 'Task not found'});
         }
 
         if (task.realm.toString() !== req.user.realm.toString()) {
@@ -109,7 +109,7 @@ router.delete('/:id', verifyToken, async (req, res) => {
 
         const taskToDelete = await Task.findById(req.params.id);
         if (!taskToDelete) {
-            return res.status(404).json({message: 'Task not found'});
+            return res.status(404).json({error: 'Task not found'});
         }
 
         if (taskToDelete.realm.toString() !== req.user.realm.toString()) {

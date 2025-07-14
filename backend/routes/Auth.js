@@ -7,6 +7,7 @@ const router = express.Router();
 const User = require('../models/User');
 const Administrator = require('../models/Administrator');
 const sendMail = require("../utils/mailer");
+const verifyToken = require("../middleware/jwt");
 
 router.post('/login', async (req, res) => {
     try {
@@ -32,7 +33,7 @@ router.post('/login', async (req, res) => {
         }
 
         if (!user || (!isSuperAdmin && user.state !== 'active')) {
-            return res.status(404).json({message: 'User not found'});
+            return res.status(404).json({error: 'User not found'});
         }
 
         if (user && await bcrypt.compare(req.body.password, user.password)) {
@@ -64,7 +65,7 @@ router.post('/reset-password', async (req, res) => {
         }
 
         if (!user) {
-            return res.status(404).json({message: 'User not found'});
+            return res.status(404).json({error: 'User not found'});
         }
 
         const newPassword = crypto.randomBytes(8).toString('hex');
@@ -76,6 +77,29 @@ router.post('/reset-password', async (req, res) => {
         res.status(200).json({message: 'New password has been sent to your email'});
     } catch (error) {
         res.status(400).json({message: error.message});
+    }
+});
+
+router.put('/update-password', verifyToken, async (req, res) => {
+    try {
+        const user = req.user.isSuperAdmin ? await Administrator.findById(req.user.id) : await User.findById(req.user.id);
+
+        if (!user) {
+            return res.status(404).json({error: 'User not found'});
+        }
+
+        const isMatch = await bcrypt.compare(req.body.currentPassword, user.password);
+
+        if (!isMatch) {
+            return res.status(401).json({error: 'Current password is incorrect'});
+        }
+
+        user.password = await bcrypt.hash(req.body.newPassword, 10);
+        await user.save();
+        res.status(200).json({message: 'Password updated successfully'});
+    } catch (error) {
+        console.error('Error updating password:', error);
+        return res.status(400).json({message: error.message});
     }
 });
 

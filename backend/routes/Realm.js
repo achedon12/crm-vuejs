@@ -52,7 +52,7 @@ router.get('/:id', verifyToken, async (req, res) => {
     try {
         const realm = await Realm.findById(req.params.id)
         if (!realm) {
-            return res.status(404).json({message: 'Realm not found'});
+            return res.status(404).json({error: 'Realm not found'});
         }
         res.status(200).json(realm);
 
@@ -65,7 +65,7 @@ router.put('/:id', verifyToken, async (req, res) => {
     try {
         let realm = await Realm.findByIdAndUpdate(req.params.id, req.body, {new: true});
         if (!realm) {
-            return res.status(404).json({message: 'Realm not found'});
+            return res.status(404).json({error: 'Realm not found'});
         }
         const users = await User.find({realm: realm._id}).select('-password -__v');
         realm = realm.toObject();
@@ -80,7 +80,7 @@ router.delete('/:id', verifyToken, async (req, res) => {
     try {
         const realm = await Realm.findByIdAndDelete(req.params.id);
         if (!realm) {
-            return res.status(404).json({message: 'Realm not found'});
+            return res.status(404).json({error: 'Realm not found'});
         }
         await User.deleteMany({realm: req.params.id});
         await Task.deleteMany({realm: req.params.id});

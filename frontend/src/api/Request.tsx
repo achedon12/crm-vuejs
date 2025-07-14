@@ -36,8 +36,7 @@ const Request = () => {
 
     const imageExists = async (url: string) => {
         try {
-            const request = api.head(url)
-            return request
+            return api.head(url)
                 .then((response: any) => {
                     return response.status === 200
                 })
@@ -45,7 +44,6 @@ const Request = () => {
                     if (error.response && error.response.status === 404) {
                         return false
                     }
-                    console.error('Error checking image existence:', error)
                     return false
                 })
         } catch (error) {
@@ -60,6 +58,20 @@ const Request = () => {
                 .post(url, mergeBody(data))
                 .then((response: any) => response.data)
                 .catch((error: any) => error.response.data)
+        } catch (error) {
+            console.error('error', error)
+        }
+    }
+
+    const upload = async (url: string, data = FormData) => {
+        try {
+            return api.post(url, data, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            })
+                .then((response: any) => response.data)
+                .catch((error: any) => error)
         } catch (error) {
             console.error('error', error)
         }
@@ -84,6 +96,7 @@ const Request = () => {
         post,
         del,
         imageExists,
+        upload,
     }
 }
 

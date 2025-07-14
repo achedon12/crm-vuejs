@@ -10,7 +10,9 @@
       <ul>
         <li class="mb-4">
           <div class="flex items items-center px-4 py-3 bg-base-300 rounded">
-            <span class="material-symbols-rounded text-secondary">account_circle</span>
+            <UserAvatar
+                size="small"
+            />
             <span
                 :class="`${usernameClass.value} font-semibold ml-4 truncate`"
                 style="max-width: 12rem; display: inline-block;"
@@ -76,6 +78,7 @@ import {useRoute, useRouter} from 'vue-router'
 import {useI18n} from 'vue-i18n'
 import {useAuthStore} from "@/stores/authStore";
 import {useToast} from "vue-toastification";
+import UserAvatar from "@/components/user/UserAvatar.vue";
 
 const toast = useToast()
 

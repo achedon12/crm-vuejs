@@ -22,7 +22,7 @@ router.post('/create', verifyToken, async (req, res) => {
         newUser.password = await bcrypt.hash(temporaryPassword, 10);
         const userRegistered = await newUser.save();
 
-        res.status(201).json(userRegistered)
+        res.status(201).json(userRegistered.populate('realm'))
 
         // create user notifications
         Notifications.forEach(notification => {
@@ -62,34 +62,33 @@ router.get('/:id', verifyToken, async (req, res) => {
         if (await isSuperAdmin(req.userId) || (req.user.role && req.user.role === 'admin')) {
             const user = await User.findById(req.params.id).populate('realm');
             if (!user) {
-                return res.status(404).json({message: 'User not found'});
+                return res.status(404).json({error: 'User not found'});
             }
-            res.status(200).json(user);
+            res.status(200).json(user.populate('realm'));
         } else {
             return res.status(403).json({message: 'You do not have permission to view this user'});
         }
     } catch (error) {
-        Catch(error);
+        Catch(error, res);
     }
 });
 
 router.put('/:id', verifyToken, async (req, res) => {
     try {
-        const user = await User.findById(req.params.id);
+        const user = await User.findByIdAndUpdate(req.params.id, req.body, {new: true}).populate('realm');
         if (!user) {
-            return res.status(404).json({message: 'User not found'});
+            return res.status(404).json({error: 'User not found'});
         }
 
-        if (req.userId !== req.params.id && !(req.user.role && req.user.role === 'admin' && user.realm && user.realm.equals(req.user.realm))) {
+        if (req.user.id !== req.params.id && !(req.user.role && req.user.role === 'admin' && user.realm && user.realm.equals(req.user.realm))) {
             return res.status(403).json({message: 'You do not have permission to update this user'});
         }
 
-        Object.assign(user, req.body);
-        user.updatedAt = Date.now();
-        const updatedUser = await user.save();
-        res.status(200).json(updatedUser);
+        const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {new: true}).populate('realm');
+        return res.status(200).json(updatedUser);
     } catch (error) {
-        Catch(error);
+        console.error(error);
+        Catch(error, res);
     }
 });
 
@@ -97,7 +96,7 @@ router.delete('/:id', verifyToken, async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
         if (!user) {
-            return res.status(404).json({message: 'User not found'});
+            return res.status(404).json({error: 'User not found'});
         }
 
         if (req.userId !== req.params.id && !(req.user.role && req.user.role === 'admin' && user.realm && user.realm.equals(req.user.realm))) {
@@ -108,7 +107,7 @@ router.delete('/:id', verifyToken, async (req, res) => {
         await user.remove();
         res.status(200).json({message: 'User deleted successfully'});
     } catch (error) {
-        Catch(error);
+        Catch(error, res);
     }
 });
 

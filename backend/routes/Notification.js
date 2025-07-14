@@ -31,17 +31,17 @@ router.post('/switch', verifyToken, async (req, res) => {
         const {_id} = req.body;
         const notification = await Notification.findById(_id);
         if (!notification) {
-            return res.status(404).json({message: 'Notification not found'});
+            return res.status(404).json({error: 'Notification not found'});
         }
         if (notification.user.toString() !== req.user.id) {
-            return res.status(403).json({message: 'Forbidden'});
+            return res.status(403).json({error: 'Forbidden'});
         }
         notification.active = !notification.active;
         await notification.save();
         res.status(200).json(notification);
     } catch (error) {
         console.error(error);
-        res.status(500).json({message: 'Internal server error'});
+        res.status(500).json({error: 'Internal server error'});
     }
 });
 
