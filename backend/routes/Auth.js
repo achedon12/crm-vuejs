@@ -20,7 +20,7 @@ router.post('/login', async (req, res) => {
                 {email: identifier},
                 {username: identifier}
             ]
-        }).populate('realm');
+        });
 
         if (!user) {
             isSuperAdmin = true;
@@ -30,6 +30,12 @@ router.post('/login', async (req, res) => {
                     {username: identifier}
                 ]
             });
+        } else {
+            user.populate('realm');
+        }
+
+        if (!req.body.password || !user.password) {
+            return res.status(400).json({ message: "Password is required" });
         }
 
         if (!user || (!isSuperAdmin && user.state !== 'active')) {

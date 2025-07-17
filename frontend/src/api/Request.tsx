@@ -2,16 +2,6 @@ import api from '@/api/index.js'
 
 const Request = () => {
 
-    const mergeBody = (data: Record<string, any>) => {
-        const body = new FormData()
-        for (const key in data) {
-            if (data.hasOwnProperty(key)) {
-                body.append(key, data[key])
-            }
-        }
-        return body
-    }
-
     const get = async (url: string) => {
         try {
             return api
@@ -26,7 +16,7 @@ const Request = () => {
     const put = async (url: string, data = {}) => {
         try {
             return api
-                .put(url, mergeBody(data))
+                .put(url, data)
                 .then((response: any) => response.data)
                 .catch((error: any) => error.response.data)
         } catch (error) {
@@ -55,7 +45,7 @@ const Request = () => {
     const post = async (url: string, data = {}) => {
         try {
             return api
-                .post(url, mergeBody(data))
+                .post(url, data)
                 .then((response: any) => response.data)
                 .catch((error: any) => error.response.data)
         } catch (error) {
@@ -81,7 +71,7 @@ const Request = () => {
         try {
             return api
                 .delete(url, {
-                    data: mergeBody(data),
+                    data: data,
                 })
                 .then((response: any) => response.data)
                 .catch((error: any) => error.response.data)
