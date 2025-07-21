@@ -19,10 +19,12 @@ api.interceptors.request.use((config) => {
         config.headers = {
             ...config.headers,
             Authorization: `Bearer ${token.value}`,
-            'Content-Type': 'multipart/form-data',
             Accept: '*/*',
             'Access-Control-Allow-Origin': '*',
             'Accept-Language': language.value || 'en',
+        }
+        if (!(config.data instanceof  FormData)) {
+            config.headers['Content-Type'] = 'application/json'
         }
     }
     return config
