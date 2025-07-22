@@ -12,7 +12,7 @@ const AppNavigationRoutes = {
             },
         },
         {
-            name: 'tasks',
+            name: 'tasks-list',
             displayName: 'menu.tasks',
             meta: {
                 icon: 'assignment',

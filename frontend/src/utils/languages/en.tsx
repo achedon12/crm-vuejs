@@ -9,6 +9,32 @@ const ENMessages = {
         logout: 'Logout',
         welcome: 'Welcome',
     },
+    task: {
+        edit: {
+            title: 'Task details',
+            state: 'State',
+            priority: 'Priority',
+            createdAt: 'Created at',
+            updatedAt: 'Updated at',
+            assignedAt: 'Assigned at',
+            dueDate: 'Due date',
+            history: 'History',
+            activity: 'Activity',
+            comments: 'Comments',
+            addComment: 'Add comment',
+            commentPlaceholder: 'Write your comment here...',
+            noDescription: 'No description provided for this task.',
+            noDueDate: 'No due date set for this task.',
+            noAssignedAt: 'This task is not assigned to anyone.',
+            created: '{user} created the task.',
+            updated: '{user} updated the task.',
+            assigned: '{user} assigned the task.',
+            unassigned: '{user} unassigned the task.',
+            stateChanged: '{user} changed the state to {state}.',
+            titleChanged: '{user} changed the title to "{title}".',
+            unknown: 'Unknown action.',
+        }
+    },
     settings: {
         title: 'Settings',
         notifications: {
@@ -51,6 +77,10 @@ const ENMessages = {
                 uniqueChars: 'Password must contain at least 6 unique characters.',
             }
         }
+    },
+    loading: {
+        message: 'Loading, please wait...',
+        subMessage: 'This may take a few seconds.',
     },
     toast: {
         updateSuccessfully: 'Successfully updated.',

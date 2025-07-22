@@ -9,6 +9,32 @@ const FRMessages = {
         logout: 'Se déconnecter',
         welcome: 'Bienvenue',
     },
+    task: {
+        edit: {
+            title: 'Détails de la tâche',
+            state: 'État',
+            priority: 'Priorité',
+            createdAt: 'Créé le',
+            updatedAt: 'Mis à jour le',
+            assignedAt: 'Assigné le',
+            dueDate: 'Date d\'échéance',
+            history: 'Historique',
+            activity: 'Activité',
+            comments: 'Commentaires',
+            addComment: 'Ajouter un commentaire',
+            commentPlaceholder: 'Écrivez votre commentaire ici...',
+            noDescription: 'Aucune description fournie pour cette tâche.',
+            noDueDate: 'Aucune date d\'échéance définie pour cette tâche.',
+            noAssignedAt: 'Cette tâche n\'est assignée à personne.',
+            created: '{user} a créé la tâche.',
+            updated: '{user} a mis à jour la tâche.',
+            assigned: '{user} a assigné la tâche.',
+            unassigned: '{user} a désassigné la tâche.',
+            stateChanged: '{user} a changé l\'état en {state}.',
+            titleChanged: '{user} a changé le titre en "{title}".',
+            unknown: 'Action inconnue.',
+        }
+    },
     settings: {
         title: 'Paramètres',
         notifications: {
@@ -51,6 +77,10 @@ const FRMessages = {
                 uniqueChars: 'Le mot de passe doit contenir au moins 6 caractères uniques.',
             }
         }
+    },
+    loading: {
+        message: 'Chargement, veuillez patienter...',
+        subMessage: 'Cela peut prendre quelques secondes.',
     },
     toast: {
         updateSuccessfully: 'Mis à jour avec succès.',

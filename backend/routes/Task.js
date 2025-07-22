@@ -2,6 +2,8 @@ const express = require('express')
 const router = express.Router();
 const User = require('../models/User');
 const Task = require('../models/Task');
+const TaskHistory = require('../models/TaskHistory');
+const TaskComment = require('../models/TaskComment');
 const Realm = require('../models/Realm');
 const sendMail = require("../utils/mailer");
 const verifyToken = require("../middleware/jwt");
@@ -23,9 +25,21 @@ router.post('/', verifyToken, async (req, res) => {
 
         const taskRegistered = await newTask.save();
 
+        const taskHistory = new TaskHistory()
+        taskHistory.task = taskRegistered._id;
+        taskHistory.action = 'created';
+        taskHistory.user = req.user._id;
+        await taskHistory.save();
+
+        const history = await TaskHistory.find({ task: task._id }).populate('user', 'name email');
+
         await ensureUserNotifications(req.user.realm, 'task_created');
 
-        return res.status(201).json(taskRegistered);
+        return res.status(201).json({
+            ...taskRegistered.toObject(),
+            history,
+            comments: []
+        });
     } catch (error) {
         Catch(error, res);
     }
@@ -53,7 +67,27 @@ router.put('/:id', verifyToken, async (req, res) => {
 
         const updatedTask = await Task.findByIdAndUpdate(req.params.id, updateData, {new: true});
 
-        if (updatedTask.assigned && updatedTask.assigned.toString() == req.user._id.toString()) {
+        let action = 'updated';
+        if (taskToUpdate.state !== updatedTask.state) {
+            action = 'state_changed';
+        } else if (taskToUpdate.assigned?.toString() !== updatedTask.assigned?.toString()) {
+            action = 'updated'; // ou 'assigned_changed' si tu veux un event spécifique
+        } else if (taskToUpdate.assigned && !updatedTask.assigned) {
+            action = 'unassigned';
+        } else if (!taskToUpdate.assigned && updatedTask.assigned) {
+            action = 'assigned';
+        } else if (taskToUpdate.title !== updatedTask.title) {
+            action = 'title_changed';
+        }
+
+        const taskHistory = new TaskHistory({
+            task: updatedTask._id,
+            action,
+            user: req.user._id
+        });
+        await taskHistory.save();
+
+        if (updatedTask.assigned && updatedTask.assigned.toString() === req.user._id.toString()) {
             await ensureUserNotifications(req.user.realm, 'task_assigned');
         } else if (updatedTask.state === 'in_progress') {
             await ensureUserNotifications(req.user.realm, 'task_started');
@@ -65,7 +99,14 @@ router.put('/:id', verifyToken, async (req, res) => {
             await ensureUserNotifications(req.user.realm, 'task_updated');
         }
 
-        res.status(200).json(updatedTask);
+        const history = await TaskHistory.find({ task: task._id }).populate('user', 'name email');
+        const comments = await TaskComment.find({ task: updatedTask._id }).populate('user', 'name email');
+
+        res.status(200).json({
+            ...updatedTask.toObject(),
+            history,
+            comments
+        });
     } catch (error) {
         Catch(error, res);
     }
@@ -86,16 +127,24 @@ router.get('/realm/:realmId', verifyToken, async (req, res) => {
 
 router.get('/:id', verifyToken, async (req, res) => {
     try {
-        const task = await Task.findById(req.params.id);
+        let task = await Task.findById(req.params.id);
         if (!task) {
             return res.status(404).json({error: 'Task not found'});
         }
 
-        if (task.realm.toString() !== req.user.realm.toString()) {
+        if (task.realm.toString() !== task.realm.toString()) {
             return res.status(403).json({message: 'You do not have permission to view this task'});
         }
 
-        res.status(200).json(task);
+        task = await task.populate([
+            {path: 'assigned', select: '-password -__v'},
+            {path: 'realm', select: '-__v'},
+        ]);
+
+        const history = await TaskHistory.find({ task: task._id }).populate('user', 'name email');
+        const comments = await TaskComment.find({ task: task._id }).populate('user', 'name email');
+
+        res.status(200).json({ ...task.toObject(), history, comments });
     } catch (error) {
         Catch(error, res);
     }
@@ -116,6 +165,8 @@ router.delete('/:id', verifyToken, async (req, res) => {
             return res.status(403).json({message: 'You do not have permission to delete this task'});
         }
 
+        await TaskComment.deleteMany({ task: taskToDelete._id });
+        await TaskHistory.deleteMany({ task: taskToDelete._id });
         await Task.findByIdAndDelete(req.params.id);
 
         await ensureUserNotifications(req.user.realm, 'task_deleted');

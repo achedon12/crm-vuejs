@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import {computed, onMounted, ref} from 'vue'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import InputText from 'primevue/inputtext'
-import { FilterMatchMode } from '@primevue/core/api'
+import {FilterMatchMode} from '@primevue/core/api'
+import {useI18n} from "vue-i18n";
+import {useTaskStore} from "@/stores/taskStore";
 
 interface ColumnDef {
   key: string
@@ -13,26 +15,30 @@ interface ColumnDef {
   view?: (item: any) => string
 }
 
+interface Action {
+  label: string
+  icon: string
+  command: (item: any) => void
+  color?: string
+}
+
 const props = defineProps<{
   columns: ColumnDef[]
-  fetchData: () => Promise<any[]>
+  actions: Action[]
+  loading?: boolean
 }>()
 
-const items = ref<any[]>([])
-const loading = ref(true)
+const {t} = useI18n()
+const taskStore = useTaskStore()
+
+const items = computed(() => taskStore.tasks)
 
 const filters = ref<{ [key: string]: any }>({
-  global: { value: null, matchMode: FilterMatchMode.CONTAINS }
-})
-
-onMounted(async () => {
-  loading.value = true
-  items.value = await props.fetchData()
-  loading.value = false
+  global: {value: null, matchMode: FilterMatchMode.CONTAINS}
 })
 
 props.columns.forEach(col => {
-  filters.value[col.key] = { value: null, matchMode: FilterMatchMode.CONTAINS }
+  filters.value[col.key] = {value: null, matchMode: FilterMatchMode.CONTAINS}
 })
 </script>
 
@@ -40,10 +46,10 @@ props.columns.forEach(col => {
   <DataTable
       v-model:filters="filters"
       :value="items"
-      :loading="loading"
+      :loading="props.loading"
       :rows="10"
       :rowsPerPageOptions="[5, 10, 20, 50]"
-      :size="small"
+      size="small"
       :globalFilterFields="props.columns.map(col => col.key)"
       paginator
       removableSort
@@ -55,7 +61,16 @@ props.columns.forEach(col => {
     <template #header>
       <div class="flex justify-between items-center">
         <h3 class="text-xl font-semibold">Tâches</h3>
-        <InputText v-model="filters['global'].value" placeholder="Recherche globale..." />
+        <div class="flex items-center space-x-2">
+          <InputText v-model="filters['global'].value" placeholder="Recherche globale..."/>
+          <button
+              class="btn btn-primary"
+              @click="$emit('add')"
+              :title="t('action.add')"
+          >
+            {{ t('action.add') }}
+          </button>
+        </div>
       </div>
     </template>
     <Column
@@ -83,6 +98,25 @@ props.columns.forEach(col => {
             placeholder="Filtrer..."
             style="width: 100%"
         />
+      </template>
+    </Column>
+    <Column
+        v-if="props.actions.length > 0"
+        key="actions"
+        header="Actions"
+    >
+      <template #body="{ data }">
+        <div class="flex space-x-1">
+          <button
+              v-for="action in props.actions"
+              :key="action.label"
+              :class="`btn btn-icon btn-${action.color || 'primary'}`"
+              @click="action.command(data)"
+              :title="action.label"
+          >
+            <span class="material-symbols-rounded">{{ action.icon }}</span>
+          </button>
+        </div>
       </template>
     </Column>
     <template #empty>

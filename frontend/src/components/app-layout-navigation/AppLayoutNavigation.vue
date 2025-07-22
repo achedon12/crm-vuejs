@@ -57,6 +57,7 @@ const findRouteName = (name: string) => {
     }
     return ''
   }
+
   return traverse(props.navigationRoutes.routes)
 }
 

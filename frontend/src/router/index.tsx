@@ -10,6 +10,7 @@ import Preferences from "@/pages/app/preferences/Preferences.vue";
 import RealmAdministration from "@/pages/app/realm-administration/RealmAdministration.vue";
 import Settings from "@/pages/app/settings/Settings.vue";
 import Realms from "@/pages/admin/realms/Realms.vue";
+import TaskEdit from "@/pages/app/tasks/TaskEdit.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -89,7 +90,25 @@ const router = createRouter({
                 {
                     name: 'tasks',
                     path: 'tasks',
-                    component: Tasks
+                    redirect: {name: 'tasks-list'},
+                    children: [
+                        {
+                            name: 'tasks-list',
+                            path: 'list',
+                            component: Tasks,
+                        },
+                        {
+                            name: 'create-task',
+                            path: 'create',
+                            component: TaskEdit
+                        },
+                        {
+                            name: 'edit-task',
+                            path: ':id',
+                            props: true,
+                            component: TaskEdit
+                        }
+                    ]
                 },
                 {
                     name: 'preferences',
