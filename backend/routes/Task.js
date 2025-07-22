@@ -31,7 +31,7 @@ router.post('/', verifyToken, async (req, res) => {
         taskHistory.user = req.user._id;
         await taskHistory.save();
 
-        const history = await TaskHistory.find({ task: task._id }).populate('user', 'name email');
+        const history = await TaskHistory.find({ task: task._id }).populate('user', 'firstname lastname email email');
 
         await ensureUserNotifications(req.user.realm, 'task_created');
 
@@ -99,8 +99,8 @@ router.put('/:id', verifyToken, async (req, res) => {
             await ensureUserNotifications(req.user.realm, 'task_updated');
         }
 
-        const history = await TaskHistory.find({ task: task._id }).populate('user', 'name email');
-        const comments = await TaskComment.find({ task: updatedTask._id }).populate('user', 'name email');
+        const history = await TaskHistory.find({ task: task._id }).populate('user', 'firstname lastname email email');
+        const comments = await TaskComment.find({ task: updatedTask._id }).populate('user', 'firstname lastname email email _id');
 
         res.status(200).json({
             ...updatedTask.toObject(),
@@ -141,8 +141,8 @@ router.get('/:id', verifyToken, async (req, res) => {
             {path: 'realm', select: '-__v'},
         ]);
 
-        const history = await TaskHistory.find({ task: task._id }).populate('user', 'name email');
-        const comments = await TaskComment.find({ task: task._id }).populate('user', 'name email');
+        const history = await TaskHistory.find({ task: task._id }).populate('user', 'firstname lastname email');
+        const comments = await TaskComment.find({ task: task._id }).populate('user', 'firstname lastname email email _id');
 
         res.status(200).json({ ...task.toObject(), history, comments });
     } catch (error) {

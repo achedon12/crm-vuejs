@@ -12,6 +12,12 @@ const Urls = {
         get: '/task/',
         update: '/task/',
         delete: '/task/',
+        comment: {
+            new: '/comment',
+            get: '/comment/',
+            update: '/comment/',
+            delete: '/comment/',
+        }
     },
     account: {
         update: '/user/',

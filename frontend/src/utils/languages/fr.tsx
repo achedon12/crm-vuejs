@@ -33,6 +33,7 @@ const FRMessages = {
             stateChanged: '{user} a changé l\'état en {state}.',
             titleChanged: '{user} a changé le titre en "{title}".',
             unknown: 'Action inconnue.',
+            commentSent: 'Commentaire envoyé avec succès.',
         }
     },
     settings: {
@@ -90,6 +91,7 @@ const FRMessages = {
         uploadSuccess: 'Fichier uploadé avec succès.',
     },
     action: {
+        send: 'Envoyer',
         save: 'Enregistrer',
         cancel: 'Annuler',
         delete: 'Supprimer',

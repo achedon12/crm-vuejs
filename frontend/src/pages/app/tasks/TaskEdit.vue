@@ -7,10 +7,13 @@ import Urls from "@/api/Urls";
 import {useToast} from "vue-toastification";
 import SpinnerLoader from "@/components/loader/SpinnerLoader.vue";
 import {useI18n} from "vue-i18n";
+import UserAvatar from "@/components/user/UserAvatar.vue";
+import {useAuthStore} from "@/stores/authStore";
 
 const route = useRoute()
 const request = Request()
 const taskStore = useTaskStore()
+const authStore = useAuthStore()
 const {push} = useRouter()
 
 let isEditing = ref(false)
@@ -28,6 +31,7 @@ let formData = reactive({
   dueDate: ''
 })
 let isLoading = ref(false)
+const comment = ref('')
 const toast = useToast()
 const {t} = useI18n()
 
@@ -86,6 +90,28 @@ const displayAction = (action: string, event: any) => {
 }
 const handleEdit = async () => {
 
+}
+
+const handleSendComment = async () => {
+  try {
+    await request.post(Urls.tasks.comment.new, {
+      task: route.params.id,
+      content: comment.value,
+      user: authStore.user._id
+    })
+
+    toast.success(t('task.edit. '))
+  } catch (error) {
+    console.error('Error sending comment:', error)
+    toast.error(error.message || t('error.generic'))
+  } finally {
+    comment.value = ''
+    await fetchTask(route.params.id as string)
+  }
+}
+
+const commentAvatar = (comment: any) => {
+  return ``
 }
 </script>
 
@@ -213,57 +239,52 @@ const handleEdit = async () => {
                       </span>
                   </div>
                   <p class="text-sm text-gray-600">
-                    Par: {{ event.user?.name || 'Système' }}
+                    Par: {{ event?.name || 'Système' }}
                   </p>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Contenu Commentaires -->
           <div v-if="activeTab === 'comments'" class="space-y-4">
-            <div class="flex items-start gap-4">
+            <div
+                v-for="(comment, idx) in formData.comments"
+                :key="comment._id || idx"
+                class="flex items-start gap-4 shadow rounded-lg p-4"
+            >
               <div class="avatar">
                 <div class="w-10 rounded-full">
-                  <img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"/>
+                  <img src="/favicon.png" alt="User Avatar" />
                 </div>
               </div>
               <div class="flex-1">
-                <div class="bg-white p-4 rounded-lg shadow">
+                <div class="p-4 rounded-lg">
                   <div class="flex justify-between items-start">
                     <div>
-                      <p class="font-medium">Jean Dupont</p>
-                      <p class="text-xs text-gray-500">12/07/2025 14:30</p>
+                      <p class="font-medium">{{ comment.user?.firstname + ' ' + comment.user?.lastname || 'Système' }}</p>
+                      <p class="text-xs text-gray-500">{{ new Date(comment.createdAt).toLocaleString() }}</p>
                     </div>
-                    <button class="btn btn-ghost btn-xs">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                           stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                      </svg>
-                    </button>
+                    <!-- Bouton supprimer, à implémenter -->
                   </div>
-                  <p class="mt-2 text-sm">J'ai commencé à travailler sur cette tâche, je devrais terminer d'ici
-                    demain.</p>
+                  <p class="mt-2 text-sm">{{ comment.content }}</p>
                 </div>
               </div>
             </div>
 
             <div class="mt-6">
               <div class="flex items-start gap-4">
-                <div class="avatar">
-                  <div class="w-10 rounded-full">
-                    <img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"/>
-                  </div>
-                </div>
+                <UserAvatar size="small" />
                 <div class="flex-1">
                   <textarea
                       class="textarea textarea-bordered w-full"
                       placeholder="Ajouter un commentaire..."
                       rows="3"
+                      v-model="comment"
                   ></textarea>
                   <div class="flex justify-end mt-2">
-                    <button class="btn btn-primary btn-sm">Envoyer</button>
+                    <button class="btn btn-primary btn-sm" @click="handleSendComment" :disabled="!comment.trim()">
+                      {{ t('action.send') }}
+                    </button>
                   </div>
                 </div>
               </div>

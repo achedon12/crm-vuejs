@@ -33,6 +33,7 @@ const ENMessages = {
             stateChanged: '{user} changed the state to {state}.',
             titleChanged: '{user} changed the title to "{title}".',
             unknown: 'Unknown action.',
+            commentSent: 'Comment sent successfully.',
         }
     },
     settings: {
@@ -90,6 +91,7 @@ const ENMessages = {
         uploadSuccess: 'File uploaded successfully.',
     },
     action: {
+        send: 'Send',
         save: 'Save',
         cancel: 'Cancel',
         delete: 'Delete',

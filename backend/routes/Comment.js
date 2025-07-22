@@ -1,6 +1,7 @@
 const express = require('express')
 
 const Comment = require('../models/TaskComment');
+const User = require('../models/User');
 const verifyToken = require("../middleware/jwt");
 
 const router = express.Router();
@@ -8,12 +9,11 @@ const router = express.Router();
 router.post('/', verifyToken, async(req, res) => {
     try {
         const newComment = new Comment(req.body);
-        newComment.user = req.user._id; // Associate the comment with the user
         const commentCreated = await newComment.save();
         res.status(201).json(commentCreated);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'An error occurred while creating the comment' });
+        res.status(500).json({ error: error.message || 'An error occurred while creating the comment' });
     }
 })
 
@@ -38,7 +38,7 @@ router.put('/:id', verifyToken, async(req, res) => {
 
 router.get('/:id', verifyToken, async(req, res) => {
     try {
-        const comment = await Comment.findById(req.params.id).populate('user', 'name email');
+        const comment = await Comment.findById(req.params.id).populate('user', 'name email _id');
         if (!comment) {
             return res.status(404).json({ error: 'Comment not found' });
         }

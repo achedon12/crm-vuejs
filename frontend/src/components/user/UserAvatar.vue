@@ -5,7 +5,7 @@ import Request from '@/api/Request.js'
 
 const store = useAuthStore()
 const user = computed(() => store.user)
-let userImage = reactive('')
+let userImage = ref('')
 const request = Request()
 
 const props = defineProps({
@@ -29,7 +29,7 @@ const props = defineProps({
 const sizePx = computed(() => {
   if (props.size === 'small') return 40
   if (props.size === 'large') return 100
-  if (props.size?.endsWith('px')) return parseInt(props.size)
+  if (typeof props.size === 'string' && props.size.endsWith('px')) return parseInt(props.size)
   return 64
 })
 
@@ -43,7 +43,7 @@ const showFallback = ref(false)
 const updateAvatar = async () => {
   showFallback.value = false
   if (props.creating || !user.value) {
-    userImage = '/favicon.png'
+    userImage.value = '/favicon.png'
     return
   }
   const apiUrl = 'http://localhost:3000'
@@ -55,17 +55,20 @@ const updateAvatar = async () => {
   } catch (error) {
     exists = false
   }
-  userImage = exists ? `${apiUrl}${imageUrl}?t=${timestamp}` : `/favicon.png`
+  userImage.value = exists ? `${apiUrl}${imageUrl}?t=${timestamp}` : `/favicon.png`
+  console.log('Avatar updated:', userImage.value)
 }
 
-onMounted(() => {
-  updateAvatar()
+onMounted(async () => {
+  await updateAvatar()
   window.addEventListener('focus', updateAvatar)
+  window.addEventListener('online', updateAvatar)
+  window.addEventListener('load', updateAvatar)
 })
 
 const userId = computed(() => user.value?._id || '')
 
-watch(() => user.value?.userId, updateAvatar)
+watch(() => userId.value, updateAvatar)
 </script>
 
 <template>
