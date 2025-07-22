@@ -49,7 +49,7 @@ const actions = [
   },
   {
     label: 'Modifier',
-    icon: 'visibility',
+    icon: 'edit',
     command: async (user) => {
       await push({name: 'user-form', params: {id: user ? user._id : null}});
     },
