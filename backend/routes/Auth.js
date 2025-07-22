@@ -33,18 +33,17 @@ router.post('/login', async (req, res) => {
                 ]
             });
         } else {
+            if (!user || user.state !== 'active') {
+                return res.status(404).json({error: 'User not found'});
+            }
             user.populate('realm');
         }
 
         if (!req.body.password || !user.password) {
-            return res.status(400).json({ message: "Password is required" });
             if (user) {
                 isSuperAdmin = true;
             }
-        }
-
-        if (!user || (!isSuperAdmin && user.state !== 'active')) {
-            return res.status(404).json({error: 'User not found'});
+            return res.status(400).json({ message: "Password is required" });
         }
 
         if (user && await bcrypt.compare(req.body.password, user.password)) {
