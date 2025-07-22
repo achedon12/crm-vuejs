@@ -60,7 +60,7 @@ const updateAvatar = async () => {
 
 onMounted(async () => {
   await updateAvatar()
-  window.addEventListener('focus', updateAvatar)
+  // window.addEventListener('focus', updateAvatar)
   window.addEventListener('online', updateAvatar)
   window.addEventListener('load', updateAvatar)
 })

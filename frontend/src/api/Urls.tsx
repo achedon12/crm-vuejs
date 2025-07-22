@@ -24,6 +24,7 @@ const Urls = {
     },
     account: {
         update: '/user/',
+        create: '/user/create',
         get: '/user/',
         getFromRealm: '/user/realm/',
     },

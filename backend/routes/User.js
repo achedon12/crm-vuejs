@@ -14,9 +14,6 @@ const {Notifications} = require("../utils/notifications/UserNotification");
 
 router.post('/create', verifyToken, async (req, res) => {
     try {
-        if (!req.user.role || (req.user.role !== 'admin')) {
-            return res.status(403).json({message: 'You do not have permission to create users'});
-        }
         const newUser = new User(req.body);
         const temporaryPassword = Math.random().toString(36).slice(-8);
         newUser.password = await bcrypt.hash(temporaryPassword, 10);
@@ -24,7 +21,6 @@ router.post('/create', verifyToken, async (req, res) => {
 
         res.status(201).json(userRegistered.populate('realm'))
 
-        // create user notifications
         Notifications.forEach(notification => {
             const newNotification = new Notification({
                 user: userRegistered._id,
@@ -63,7 +59,7 @@ router.get('/:id', verifyToken, async (req, res) => {
         if (!user) {
             return res.status(404).json({error: 'User not found'});
         }
-        res.status(200).json(user.populate('realm'));
+        res.status(200).json(user);
     } catch (error) {
         Catch(error, res);
     }
@@ -76,12 +72,7 @@ router.put('/:id', verifyToken, async (req, res) => {
             return res.status(404).json({error: 'User not found'});
         }
 
-        if (req.user.id !== req.params.id && !(req.user.role && req.user.role === 'admin' && user.realm && user.realm.equals(req.user.realm))) {
-            return res.status(403).json({message: 'You do not have permission to update this user'});
-        }
-
-        const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {new: true}).populate('realm');
-        return res.status(200).json(updatedUser);
+        return res.status(200).json(user);
     } catch (error) {
         console.error(error);
         Catch(error, res);

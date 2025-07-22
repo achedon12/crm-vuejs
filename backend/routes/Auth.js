@@ -32,18 +32,12 @@ router.post('/login', async (req, res) => {
                     {username: data.emailOrUsername}
                 ]
             });
+            isSuperAdmin = true;
         } else {
             if (!user || user.state !== 'active') {
                 return res.status(404).json({error: 'User not found'});
             }
             user.populate('realm');
-        }
-
-        if (!req.body.password || !user.password) {
-            if (user) {
-                isSuperAdmin = true;
-            }
-            return res.status(400).json({ message: "Password is required" });
         }
 
         if (user && await bcrypt.compare(req.body.password, user.password)) {
