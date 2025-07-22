@@ -162,7 +162,7 @@ watchEffect(() => {
     <div class="bg-base-100 shadow rounded col-span-2 row-span-2">
       <Chart type="line" :data="lineData" :options="lineOptions"/>
     </div>
-    <div class="bg-base-100 shadow rounded col-span-2 row-span-2 p-4">
+    <div class="bg-base-100 shadow rounded col-span-2 row-span-2 p-4 overflow-y-auto max-h-80">
       <ul class="list">
         <li class="p-4 pb-2 text-xl tracking-wide">Utilisateurs de mon domaine</li>
         <li v-for="user in stats.usersOfMyRealm" :key="user._id" class="list-row">

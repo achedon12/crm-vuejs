@@ -13,21 +13,23 @@ router.post('/login', async (req, res) => {
     try {
         let user;
         let isSuperAdmin = false;
-        const identifier = req.body.emailOrUsername;
+        const data = req.body;
+        if (!data.emailOrUsername || !data.password) {
+            return res.status(400).json({error: 'Identifier and password are required'});
+        }
 
         user = await User.findOne({
             $or: [
-                {email: identifier},
-                {username: identifier}
+                {email: data.emailOrUsername},
+                {username: data.emailOrUsername}
             ]
         });
 
         if (!user) {
-            isSuperAdmin = true;
             user = await Administrator.findOne({
                 $or: [
-                    {email: identifier},
-                    {username: identifier}
+                    {email: data.emailOrUsername},
+                    {username: data.emailOrUsername}
                 ]
             });
         } else {
@@ -36,6 +38,9 @@ router.post('/login', async (req, res) => {
 
         if (!req.body.password || !user.password) {
             return res.status(400).json({ message: "Password is required" });
+            if (user) {
+                isSuperAdmin = true;
+            }
         }
 
         if (!user || (!isSuperAdmin && user.state !== 'active')) {
