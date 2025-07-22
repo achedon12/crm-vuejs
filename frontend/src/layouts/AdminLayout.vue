@@ -17,9 +17,9 @@ const isMobile = ref(false)
         :visible="!isSidebarMinimized"
         :mobile="isMobile"
     />
-    <div class="flex-1 flex flex-col overflow-y-auto h-screen">
+    <div class="flex-1 flex flex-col">
       <AppLayoutNavigation
-          class="p-4 h-full"
+          class="p-4"
           :navigationRoutes="AdminNavigationRoutes"
           :isSidebarMinimized="isSidebarMinimized"
           @toggle-sidebar="isSidebarMinimized = !isSidebarMinimized"
