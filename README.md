@@ -45,7 +45,7 @@ Make sure you have an env file
 When project is running and you seed the database, you can access the application at [http://localhost:5173](http://localhost:5173).
 
 > Super admin connection:
-> - Email: admin@gmail.com
+> - Email: admin
 > - Password: admin
 >
 > Admin connection:
