@@ -52,6 +52,7 @@ module.exports.ensureUserNotifications = async (realmId, action) => {
         const userNotifications = await Notification.find({
             action: action,
             user: {$in: users.map(user => user._id)},
+            active: true
         }).populate('user');
 
         if (!userNotifications && userNotifications.length === 0) {
