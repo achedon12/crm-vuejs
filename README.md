@@ -6,12 +6,12 @@
 Make sure you have an env file
 
 ```dotenv
-PORT=3000
-MONGO_URI=mongodb://root:root@localhost:27017
-JWT_SECRET=secret
-MAILER_DSN=smtp://localhost:1030
-EMAIL_USER=no-reply@crm.com
-APP_URL=http://localhost:5173
+    PORT=3000
+    MONGO_URI=mongodb://root:root@localhost:27017
+    JWT_SECRET=secret
+    MAILER_DSN=smtp://localhost:1030
+    EMAIL_USER=no-reply@crm.com
+    APP_URL=http://localhost:5173
 ```
 
 ## Installation
@@ -23,12 +23,12 @@ APP_URL=http://localhost:5173
 ```
 
 ```bash
-    cd backend && npm run seed # to seed the database with some data
+  cd backend && npm run seed # to seed the database with some data
 ```
 
 
 ```bash
-    cd backend && docker compose up # to start the database and the mailer
+  cd backend && docker compose up # to start the database and the mailer
 ```
 
 ### Frontend
