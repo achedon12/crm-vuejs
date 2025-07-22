@@ -1,5 +1,10 @@
 import {Realm} from "@/utils/interfaces/Realm";
 
+export interface UserRole {
+    ADMIN: "admin",
+    USER: "user"
+}
+
 export interface User {
     id: number;
     email: string;
@@ -7,6 +12,7 @@ export interface User {
     firstname: string;
     lastname: string;
     realm: Realm;
+    role: UserRole;
     state: string;
     createdAt: string;
     updatedAt: string;

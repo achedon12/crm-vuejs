@@ -65,16 +65,15 @@ const columns = [
     sortable: true
   },
 ];
-
-const loading = ref(false);
-
-onMounted(async () => {
-  loading.value = true;
-  await taskStore.fetchTasks()
-  loading.value = false;
-})
-
 const actions = [
+  {
+    label: 'Créer une tâche',
+    icon: 'add',
+    command: async () => {
+      await push({name: 'edit-task', params: {id: null}});
+    },
+    color: 'primary'
+  },
   {
     label: 'Voir',
     icon: 'visibility',
@@ -92,10 +91,21 @@ const actions = [
     color: 'error'
   }
 ]
+
+const loading = ref(false);
+
+onMounted(async () => {
+  loading.value = true;
+  await taskStore.fetchTasks()
+  loading.value = false;
+})
+
+const gridTitle = 'Tasks';
+
 </script>
 
 <template>
   <div class="bg-base-100 shadow-lg rounded-lg p-4 h-full">
-    <Grid :columns="columns" :loading="loading" :actions="actions"/>
+    <Grid :title="gridTitle" :columns="columns" :loading="loading" :actions="actions" :items="taskStore.tasks"/>
   </div>
 </template>

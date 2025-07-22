@@ -11,6 +11,7 @@ import RealmAdministration from "@/pages/app/realm-administration/RealmAdministr
 import Settings from "@/pages/app/settings/Settings.vue";
 import Realms from "@/pages/admin/realms/Realms.vue";
 import TaskEdit from "@/pages/app/tasks/TaskEdit.vue";
+import UserForm from "@/pages/app/realm-administration/user-list/user-form/UserForm.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -118,7 +119,32 @@ const router = createRouter({
                 {
                     name: 'realm-administration',
                     path: 'realm-administration',
-                    component: RealmAdministration
+                    redirect: {name: 'realm-administration-home'},
+                    beforeEnter: (to, from, next) => {
+                        const authStore = useAuthStore()
+                        if (!authStore.user || !authStore.token || !authStore.realm) {
+                            next({name: 'login'})
+                        } else if (authStore.superAdmin && !authStore.isSwitched) {
+                            next({name: 'admin'})
+                        } else if (authStore.realm && authStore.user.role.includes('admin')) {
+                            next()
+                        } else {
+                            next({name: '403'})
+                        }
+                    },
+                    children: [
+                        {
+                            name: 'realm-administration-home',
+                            path: '',
+                            component: RealmAdministration
+                        },
+                        {
+                            name: 'user-form',
+                            path: 'user-form/:id?',
+                            props: true,
+                            component: UserForm
+                        },
+                    ]
                 },
                 {
                     name: 'settings',

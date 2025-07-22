@@ -23,15 +23,14 @@ interface Action {
 }
 
 const props = defineProps<{
+  title?: string,
   columns: ColumnDef[]
   actions: Action[]
-  loading?: boolean
+  loading?: boolean,
+  items: any[]
 }>()
 
 const {t} = useI18n()
-const taskStore = useTaskStore()
-
-const items = computed(() => taskStore.tasks)
 
 const filters = ref<{ [key: string]: any }>({
   global: {value: null, matchMode: FilterMatchMode.CONTAINS}
@@ -60,19 +59,44 @@ props.columns.forEach(col => {
   >
     <template #header>
       <div class="flex justify-between items-center">
-        <h3 class="text-xl font-semibold">Tâches</h3>
+        <h3 class="text-xl font-semibold">
+          {{ props.title || t('grid.title') }}
+        </h3>
         <div class="flex items-center space-x-2">
           <InputText v-model="filters['global'].value" placeholder="Recherche globale..."/>
           <button
+              v-if="props.actions.some(action => action.icon === 'add')"
               class="btn btn-primary"
-              @click="$emit('add')"
-              :title="t('action.add')"
+              @click="props.actions.find(action => action.icon === 'add').command()"
           >
-            {{ t('action.add') }}
+            <span class="material-symbols-rounded">add</span>
+            {{ props.actions.find(action => action.icon === 'add').label || t('grid.add') }}
           </button>
         </div>
       </div>
     </template>
+    <Column
+        v-if="props.actions.length > 0"
+        key="actions"
+        header="Actions"
+    >
+      <template #body="{ data }">
+        <div class="flex space-x-1">
+          <button
+              v-for="action in props.actions.filter(a => a.icon !== 'add')"
+              :key="action.label"
+              @click="action.command(data)"
+              class="cursor-pointer w-8 h-8"
+              :title="action.label"
+          >
+            <span class="material-symbols-rounded hover:brightness-150 transition-all duration-200"
+                  :class="`text-${action.color || 'primary'}`">
+                  {{ action.icon }}
+            </span>
+          </button>
+        </div>
+      </template>
+    </Column>
     <Column
         v-for="col in props.columns"
         :key="col.key"
@@ -98,25 +122,6 @@ props.columns.forEach(col => {
             placeholder="Filtrer..."
             style="width: 100%"
         />
-      </template>
-    </Column>
-    <Column
-        v-if="props.actions.length > 0"
-        key="actions"
-        header="Actions"
-    >
-      <template #body="{ data }">
-        <div class="flex space-x-1">
-          <button
-              v-for="action in props.actions"
-              :key="action.label"
-              :class="`btn btn-icon btn-${action.color || 'primary'}`"
-              @click="action.command(data)"
-              :title="action.label"
-          >
-            <span class="material-symbols-rounded">{{ action.icon }}</span>
-          </button>
-        </div>
       </template>
     </Column>
     <template #empty>

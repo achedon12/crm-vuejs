@@ -22,6 +22,7 @@ const Urls = {
     account: {
         update: '/user/',
         get: '/user/',
+        getFromRealm: '/user/realm/',
     },
     notification: {
         switch: '/notification/switch',

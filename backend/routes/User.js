@@ -59,15 +59,11 @@ router.get('/', verifyToken, async (req, res) => {
 
 router.get('/:id', verifyToken, async (req, res) => {
     try {
-        if (await isSuperAdmin(req.userId) || (req.user.role && req.user.role === 'admin')) {
-            const user = await User.findById(req.params.id).populate('realm');
-            if (!user) {
-                return res.status(404).json({error: 'User not found'});
-            }
-            res.status(200).json(user.populate('realm'));
-        } else {
-            return res.status(403).json({message: 'You do not have permission to view this user'});
+        const user = await User.findById(req.params.id).populate('realm');
+        if (!user) {
+            return res.status(404).json({error: 'User not found'});
         }
+        res.status(200).json(user.populate('realm'));
     } catch (error) {
         Catch(error, res);
     }
@@ -106,6 +102,20 @@ router.delete('/:id', verifyToken, async (req, res) => {
         await Task.deleteMany({assignedTo: user._id});
         await user.remove();
         res.status(200).json({message: 'User deleted successfully'});
+    } catch (error) {
+        Catch(error, res);
+    }
+});
+
+router.get('/realm/:id', verifyToken, async (req, res) => {
+    try {
+        const realm = await Realm.findById(req.params.id);
+        if (!realm) {
+            return res.status(404).json({error: 'Realm not found'});
+        }
+
+        const users = await User.find({realm: req.params.id}).populate('realm');
+        return res.status(200).json(users);
     } catch (error) {
         Catch(error, res);
     }
