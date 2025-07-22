@@ -70,7 +70,7 @@ const actions = [
     label: 'Créer une tâche',
     icon: 'add',
     command: async () => {
-      await push({name: 'edit-task', params: {id: null}});
+      await push({name: 'create-task'});
     },
     color: 'primary'
   },

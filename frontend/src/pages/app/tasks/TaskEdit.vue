@@ -41,14 +41,16 @@ const {t} = useI18n()
 const stateOptions = [
   {value: 'submitted', label: t('task.states.submitted')},
   {value: 'in_progress', label: t('task.states.inProgress')},
-  {value: 'completed', label: t('task.states.completed')}
+  {value: 'completed', label: t('task.states.completed')},
+  {value: 'archived', label: t('task.states.archived')},
+  {value: 'done', label: t('task.states.done')},
 ]
 
 const priorityOptions = [
   {value: 'low', label: t('task.priorities.low')},
   {value: 'medium', label: t('task.priorities.medium')},
   {value: 'high', label: t('task.priorities.high')},
-  {value: 'critical', label: t('task.priorities.critical')}
+  {value: 'critical', label: t('task.priorities.critical')},
 ]
 
 defineProps({
@@ -147,6 +149,7 @@ const handleSendComment = async () => {
     toast.error(error.message || t('error.generic'))
   }
 }
+
 </script>
 
 <template>
@@ -231,7 +234,10 @@ const handleSendComment = async () => {
                     :class="{
                     'badge-info': formData.state === 'submitted',
                     'badge-warning': formData.state === 'in_progress',
-                    'badge-success': formData.state === 'completed'
+                    'badge-success': formData.state === 'completed',
+                    'badge-error': formData.state === 'critical',
+                    'badge-secondary': formData.state === 'archived',
+                    'badge-primary': formData.state === 'done'
                   }"
                 >
                   {{ stateOptions.find(o => o.value === formData.state)?.label || formData.state }}
@@ -260,7 +266,8 @@ const handleSendComment = async () => {
                     'badge-error': formData.priority === 'high',
                     'badge-warning': formData.priority === 'medium',
                     'badge-success': formData.priority === 'low',
-                    'badge-primary': formData.priority === 'critical'
+                    'badge-primary': formData.priority === 'critical',
+                    'badge-secondary': formData.priority === 'archived'
                   }"
                 >
                   {{ priorityOptions.find(o => o.value === formData.priority)?.label || formData.priority }}
@@ -377,6 +384,9 @@ const handleSendComment = async () => {
                           'badge-info': event.previousState === 'submitted',
                           'badge-warning': event.previousState === 'in-progress',
                           'badge-success': event.previousState === 'completed',
+                          'badge-error': event.previousState === 'critical',
+                          'badge-secondary': event.previousState === 'archived',
+                          'badge-primary': event.previousState === 'done'
                         }">
                         {{ stateOptions.find(s => s.value === event.previousState)?.label || event.previousState }}
                       </span>
@@ -390,6 +400,8 @@ const handleSendComment = async () => {
                         'badge-warning': event.state === 'in-progress',
                         'badge-success': event.state === 'completed',
                         'badge-error': event.state === 'critical',
+                        'badge-secondary': event.state === 'archived',
+                        'badge-primary': event.state === 'done'
                       }">
                         {{ stateOptions.find(s => s.value === event.state)?.label || event.state }}
                       </span>

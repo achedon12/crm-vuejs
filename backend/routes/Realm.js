@@ -38,11 +38,26 @@ router.get('/', verifyToken, async (req, res) => {
         const realms = await Realm.find();
         const realmsWithUsers = await Promise.all(
             realms.map(async (realm) => {
-                const users = await User.find({ realm: realm._id }).select('-password -__v').populate('realm');
-                return { ...realm.toObject(), users };
+                const users = await User.find({realm: realm._id}).select('-password -__v').populate('realm');
+                return {...realm.toObject(), users};
             })
         );
         res.status(200).json(realmsWithUsers);
+    } catch (error) {
+        Catch(error, res);
+    }
+});
+
+router.get('/:id/assignees', verifyToken, async (req, res) => {
+    try {
+        const realm = await Realm.findById(req.params.id);
+        if (!realm) {
+            return res.status(404).json({error: 'Realm not found'});
+        }
+        const users = await User.find({realm: realm._id, state: 'active'}, '-password -__v')
+            .select('username firstname lastname email role state')
+            .sort({username: 1});
+        res.status(200).json(users);
     } catch (error) {
         Catch(error, res);
     }

@@ -14,12 +14,17 @@ const ENMessages = {
             submitted: 'Submitted',
             inProgress: 'In Progress',
             completed: 'Completed',
+            done: 'Done',
+            archived: 'Archived',
         },
         priorities: {
             low: 'Low',
             medium: 'Medium',
             high: 'High',
             critical: 'Critical',
+        },
+        create: {
+            title: 'Create a new task',
         },
         edit: {
             title: 'Task details',
@@ -63,10 +68,26 @@ const ENMessages = {
     },
     form: {
         field: {
+            title: 'Title',
+            description: 'Description',
             firstname: 'First Name',
             lastname: 'Last Name',
             password: 'Password',
             email: 'Email',
+            priority: 'Priority',
+            dueDate: 'Due Date',
+            assigned: 'Assigned To',
+        },
+        placeholder: {
+            title: 'Enter title',
+            description: 'Enter description',
+            firstname: 'Enter first name',
+            lastname: 'Enter last name',
+            password: 'Enter password',
+            email: 'Enter email address',
+            priority: 'Select priority',
+            dueDate: 'Select due date',
+            assigned: 'Select user to assign',
         },
         required: {
             allFields: 'All fields are required.',
@@ -99,6 +120,7 @@ const ENMessages = {
         updateSuccessfully: 'Successfully updated.',
         deleteSuccessfully: 'Successfully deleted.',
         saveSuccessfully: 'Successfully saved.',
+        createSuccessfully: 'Successfully created.',
         uploadFailed: 'File upload failed.',
         uploadSuccess: 'File uploaded successfully.',
     },

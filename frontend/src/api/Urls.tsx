@@ -6,6 +6,9 @@ const Urls = {
         register: '/auth/register',
         updatePassword: '/auth/update-password',
     },
+    realm: {
+        assignees: '/realm/{id}/assignees',
+    },
     tasks: {
         realm: '/task/realm/',
         new: 'task',

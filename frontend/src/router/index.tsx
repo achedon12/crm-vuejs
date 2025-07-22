@@ -12,6 +12,7 @@ import Settings from "@/pages/app/settings/Settings.vue";
 import Realms from "@/pages/admin/realms/Realms.vue";
 import TaskEdit from "@/pages/app/tasks/TaskEdit.vue";
 import UserForm from "@/pages/app/realm-administration/user-list/user-form/UserForm.vue";
+import TaskCreate from "@/pages/app/tasks/TaskCreate.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -101,7 +102,7 @@ const router = createRouter({
                         {
                             name: 'create-task',
                             path: 'create',
-                            component: TaskEdit
+                            component: TaskCreate
                         },
                         {
                             name: 'edit-task',

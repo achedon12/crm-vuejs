@@ -14,12 +14,17 @@ const FRMessages = {
             submitted: 'Soumise',
             inProgress: 'En cours',
             completed: 'Terminée',
+            done: 'Fait',
+            archived: 'Archivée',
         },
         priorities: {
             low: 'Basse',
             medium: 'Moyenne',
             high: 'Haute',
             critical: 'Critique',
+        },
+        create: {
+            title: 'Créer une nouvelle tâche',
         },
         edit: {
             title: 'Détails de la tâche',
@@ -63,10 +68,26 @@ const FRMessages = {
     },
     form: {
         field: {
+            title: 'Titre',
+            description: 'Description',
             firstname: 'Prénom',
             lastname: 'Nom de famille',
             password: 'Mot de passe',
             email: 'Email',
+            priority: 'Priorité',
+            dueDate: 'Date d\'échéance',
+            assigned: 'Assigné à',
+        },
+        placeholder: {
+            title: 'Entrez le titre',
+            description: 'Entrez la description',
+            firstname: 'Entrez votre prénom',
+            lastname: 'Entrez votre nom de famille',
+            password: 'Entrez votre mot de passe',
+            email: 'Entrez votre adresse e-mail',
+            priority: 'Sélectionnez la priorité',
+            dueDate: 'Sélectionnez la date d\'échéance',
+            assigned: 'Sélectionnez un utilisateur',
         },
         required: {
             allFields: 'Tous les champs sont obligatoires.',
@@ -99,6 +120,7 @@ const FRMessages = {
         updateSuccessfully: 'Mis à jour avec succès.',
         deleteSuccessfully: 'Supprimé avec succès.',
         saveSuccessfully: 'Enregistré avec succès.',
+        createSuccessfully: 'Créé avec succès.',
         uploadFailed: 'Échec du téléchargement du fichier.',
         uploadSuccess: 'Fichier uploadé avec succès.',
     },

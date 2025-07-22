@@ -31,7 +31,7 @@ router.post('/', verifyToken, async (req, res) => {
         taskHistory.user = req.user.id;
         await taskHistory.save();
 
-        const history = await TaskHistory.find({task: task._id}).populate('user', 'username firstname lastname email email');
+        const history = await TaskHistory.find({task: taskRegistered._id}).populate('user', 'username firstname lastname email email');
 
         await ensureUserNotifications(req.user.realm, 'task_created');
 
@@ -41,6 +41,7 @@ router.post('/', verifyToken, async (req, res) => {
             comments: []
         });
     } catch (error) {
+        console.log(error);
         Catch(error, res);
     }
 });
