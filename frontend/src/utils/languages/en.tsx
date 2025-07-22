@@ -10,8 +10,20 @@ const ENMessages = {
         welcome: 'Welcome',
     },
     task: {
+        states: {
+            submitted: 'Submitted',
+            inProgress: 'In Progress',
+            completed: 'Completed',
+        },
+        priorities: {
+            low: 'Low',
+            medium: 'Medium',
+            high: 'High',
+            critical: 'Critical',
+        },
         edit: {
             title: 'Task details',
+            description: 'Description',
             state: 'State',
             priority: 'Priority',
             createdAt: 'Created at',
@@ -101,6 +113,9 @@ const ENMessages = {
         confirm: 'Confirm',
         resetPassword: 'Reset Password',
         changePassword: 'Change Password',
+    },
+    error: {
+        generic: 'An error occurred. Please try again later.',
     }
 }
 export default ENMessages

@@ -56,7 +56,6 @@ const updateAvatar = async () => {
     exists = false
   }
   userImage.value = exists ? `${apiUrl}${imageUrl}?t=${timestamp}` : `/favicon.png`
-  console.log('Avatar updated:', userImage.value)
 }
 
 onMounted(async () => {

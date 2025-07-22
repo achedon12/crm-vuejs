@@ -28,10 +28,10 @@ router.post('/', verifyToken, async (req, res) => {
         const taskHistory = new TaskHistory()
         taskHistory.task = taskRegistered._id;
         taskHistory.action = 'created';
-        taskHistory.user = req.user._id;
+        taskHistory.user = req.user.id;
         await taskHistory.save();
 
-        const history = await TaskHistory.find({ task: task._id }).populate('user', 'firstname lastname email email');
+        const history = await TaskHistory.find({task: task._id}).populate('user', 'username firstname lastname email email');
 
         await ensureUserNotifications(req.user.realm, 'task_created');
 
@@ -51,12 +51,15 @@ router.put('/:id', verifyToken, async (req, res) => {
             return res.status(403).json({message: 'Super Admins cannot update tasks directly'});
         }
 
-        const taskToUpdate = await Task.findById(req.params.id);
+        const taskToUpdate = await Task.findById(req.params.id).populate([
+            {path: 'realm'}
+        ]);
+
         if (!taskToUpdate) {
             return res.status(404).json({error: 'Task not found'});
         }
 
-        if (taskToUpdate.realm.toString() !== req.user.realm.toString()) {
+        if (req.user.role !== 'admin' && taskToUpdate.realm._id !== req.user.realm.toString()) {
             return res.status(403).json({message: 'You do not have permission to update this task'});
         }
 
@@ -83,11 +86,11 @@ router.put('/:id', verifyToken, async (req, res) => {
         const taskHistory = new TaskHistory({
             task: updatedTask._id,
             action,
-            user: req.user._id
+            user: req.user.id.toString()
         });
         await taskHistory.save();
 
-        if (updatedTask.assigned && updatedTask.assigned.toString() === req.user._id.toString()) {
+        if (updatedTask.assigned && updatedTask.assigned._id === req.user.id.toString()) {
             await ensureUserNotifications(req.user.realm, 'task_assigned');
         } else if (updatedTask.state === 'in_progress') {
             await ensureUserNotifications(req.user.realm, 'task_started');
@@ -99,8 +102,8 @@ router.put('/:id', verifyToken, async (req, res) => {
             await ensureUserNotifications(req.user.realm, 'task_updated');
         }
 
-        const history = await TaskHistory.find({ task: task._id }).populate('user', 'firstname lastname email email');
-        const comments = await TaskComment.find({ task: updatedTask._id }).populate('user', 'firstname lastname email email _id');
+        const history = await TaskHistory.find({task: updatedTask._id}).populate('user', 'username firstname lastname email');
+        const comments = await TaskComment.find({task: updatedTask._id}).populate('user', 'username firstname lastname email email _id');
 
         res.status(200).json({
             ...updatedTask.toObject(),
@@ -108,6 +111,7 @@ router.put('/:id', verifyToken, async (req, res) => {
             comments
         });
     } catch (error) {
+        console.error(error);
         Catch(error, res);
     }
 });
@@ -141,10 +145,10 @@ router.get('/:id', verifyToken, async (req, res) => {
             {path: 'realm', select: '-__v'},
         ]);
 
-        const history = await TaskHistory.find({ task: task._id }).populate('user', 'firstname lastname email');
-        const comments = await TaskComment.find({ task: task._id }).populate('user', 'firstname lastname email email _id');
+        const history = await TaskHistory.find({task: task._id}).populate('user', 'username firstname lastname email');
+        const comments = await TaskComment.find({task: task._id}).populate('user', 'username firstname lastname email email _id');
 
-        res.status(200).json({ ...task.toObject(), history, comments });
+        res.status(200).json({...task.toObject(), history, comments});
     } catch (error) {
         Catch(error, res);
     }
@@ -165,8 +169,8 @@ router.delete('/:id', verifyToken, async (req, res) => {
             return res.status(403).json({message: 'You do not have permission to delete this task'});
         }
 
-        await TaskComment.deleteMany({ task: taskToDelete._id });
-        await TaskHistory.deleteMany({ task: taskToDelete._id });
+        await TaskComment.deleteMany({task: taskToDelete._id});
+        await TaskHistory.deleteMany({task: taskToDelete._id});
         await Task.findByIdAndDelete(req.params.id);
 
         await ensureUserNotifications(req.user.realm, 'task_deleted');

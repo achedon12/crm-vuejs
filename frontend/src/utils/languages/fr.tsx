@@ -10,8 +10,20 @@ const FRMessages = {
         welcome: 'Bienvenue',
     },
     task: {
+        states: {
+            submitted: 'Soumise',
+            inProgress: 'En cours',
+            completed: 'Terminée',
+        },
+        priorities: {
+            low: 'Basse',
+            medium: 'Moyenne',
+            high: 'Haute',
+            critical: 'Critique',
+        },
         edit: {
             title: 'Détails de la tâche',
+            description: 'Description',
             state: 'État',
             priority: 'Priorité',
             createdAt: 'Créé le',
@@ -101,7 +113,10 @@ const FRMessages = {
         confirm: 'Confirmer',
         resetPassword: 'Réinitialiser le mot de passe',
         changePassword: 'Changer le mot de passe',
-    }
+    },
+    error: {
+        generic: 'Une erreur est survenue. Veuillez réessayer plus tard.',
+    },
 }
 
 export default FRMessages
