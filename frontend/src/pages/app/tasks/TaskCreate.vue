@@ -41,7 +41,6 @@ onMounted(async () => {
       toast.error(response.data?.message || t('error.generic'))
     }
     availableAssignees.value = response.data || []
-    console.log('Available Assignees:', availableAssignees.value)
   } catch (error) {
     toast.error(error.message || t('error.generic'))
   } finally {
@@ -58,15 +57,13 @@ const handleSubmit = async () => {
   try {
     isLoading.value = true
 
-    const response = await request.post(Urls.tasks.new, {
+    await request.post(Urls.tasks.new, {
       title: formData.value.title,
       description: formData.value.description,
       priority: formData.value.priority,
       dueDate: formData.value.dueDate || null,
       assigned: formData.value.assignedTo || null
     })
-
-    console.log('Task created:', response)
 
     toast.success(t('toast.createSuccessfully'))
     await router.push({name: 'tasks'})

@@ -66,6 +66,7 @@ router.put('/:id', verifyToken, async (req, res) => {
 
         const updateData = {
             ...req.body,
+            assigned: req.body.assigned === '' ? null : req.body.assigned,
             updatedAt: Date.now()
         };
 

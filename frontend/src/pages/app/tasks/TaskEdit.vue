@@ -34,6 +34,7 @@ let formData = reactive({
 })
 let isLoading = ref(false)
 const isRealmAdministrator = ref(false)
+const availableAssignees = ref([])
 const comment = ref('')
 const toast = useToast()
 const {t} = useI18n()
@@ -72,6 +73,23 @@ const fetchTask = async (taskId: string) => {
   isRealmAdministrator.value = authStore.user.role === 'admin'
 }
 
+const fetchAvailableAssignees = async () => {
+  try {
+    isLoading.value = true
+    const response = await request.get(Urls.realm.assignees.replace('{id}', authStore.user.realm._id))
+
+    if (response.status !== 200) {
+      toast.error(response.data?.message || t('error.generic'))
+      return
+    }
+    availableAssignees.value = response.data || []
+  } catch (error) {
+    toast.error(error.message || t('error.generic'))
+  } finally {
+    isLoading.value = false
+  }
+}
+
 const toggleEditMode = () => {
   editMode.value = !editMode.value
 }
@@ -84,7 +102,8 @@ const saveChanges = async () => {
       description: formData.description,
       state: formData.state,
       priority: formData.priority,
-      dueDate: formData.dueDate
+      dueDate: formData.dueDate,
+      assigned: formData.assigned,
     })
 
     toast.success(t('toast.updateSuccessfully'))
@@ -109,12 +128,12 @@ onMounted(async () => {
       await push({name: 'tasks'})
     }
     await fetchTask(taskId)
+    await fetchAvailableAssignees()
   }
   isLoading.value = false
 })
 
 const displayAction = (action: string, event: any) => {
-  console.log('displayAction', action, event)
   switch (action) {
     case 'created':
       return t('task.edit.created', {user: event?.user.username || 'Système'});
@@ -275,7 +294,6 @@ const handleSendComment = async () => {
               </div>
             </div>
 
-            <!-- Due Date -->
             <div>
               <label class="label">
                 <span class="label-text">{{ t('task.edit.dueDate') }}</span>
@@ -291,7 +309,6 @@ const handleSendComment = async () => {
               </p>
             </div>
 
-            <!-- Created At -->
             <div>
               <label class="label">
                 <span class="label-text">{{ t('task.edit.createdAt') }}</span>
@@ -301,7 +318,6 @@ const handleSendComment = async () => {
               </p>
             </div>
 
-            <!-- Updated At -->
             <div>
               <label class="label">
                 <span class="label-text">{{ t('task.edit.updatedAt') }}</span>
@@ -311,19 +327,26 @@ const handleSendComment = async () => {
               </p>
             </div>
 
-            <!-- Assigned -->
             <div>
               <label class="label">
                 <span class="label-text">{{ t('task.edit.assignedAt') }}</span>
               </label>
-              <p class="mt-1">
+              <select
+                  v-if="editMode && isRealmAdministrator"
+                  v-model="formData.assigned"
+                  class="select select-bordered w-full">
+                <option value="">{{ t('task.edit.unassigned') }}</option>
+                <option v-for="user in availableAssignees" :key="user._id" :value="user._id">
+                  {{ user.username }}
+                </option>
+              </select>
+              <p class="mt-1" v-else>
                 {{ formData.assigned?.username || t('task.edit.noAssignedAt') }}
               </p>
             </div>
           </div>
         </div>
 
-        <!-- Activity Section -->
         <div class="px-6 py-4 border-t">
           <div class="flex justify-between items-center mb-4">
             <h3 class="text-lg font-medium text-primary">{{ t('task.edit.activity') }}</h3>
