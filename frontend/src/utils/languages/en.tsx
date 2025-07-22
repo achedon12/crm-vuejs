@@ -70,6 +70,7 @@ const ENMessages = {
         field: {
             title: 'Title',
             description: 'Description',
+            username: 'Username',
             firstname: 'First Name',
             lastname: 'Last Name',
             password: 'Password',
@@ -77,6 +78,12 @@ const ENMessages = {
             priority: 'Priority',
             dueDate: 'Due Date',
             assigned: 'Assigned To',
+            role: 'Role',
+            state: 'State',
+            createdAt: 'Created At',
+            updatedAt: 'Updated At',
+            user: 'User',
+            admin: 'Administrator',
         },
         placeholder: {
             title: 'Enter title',
@@ -112,6 +119,18 @@ const ENMessages = {
             }
         }
     },
+    realmAdministration: {
+        userManagement: {
+            title: 'User Management',
+            gridTitle: 'Realm Users: {count}',
+            create: "Create New User",
+            view: "User Details",
+            delete: "Delete User",
+        },
+        roleManagement: {
+            title: 'Role Management',
+        },
+    },
     loading: {
         message: 'Loading, please wait...',
         subMessage: 'This may take a few seconds.',
@@ -123,6 +142,7 @@ const ENMessages = {
         createSuccessfully: 'Successfully created.',
         uploadFailed: 'File upload failed.',
         uploadSuccess: 'File uploaded successfully.',
+        loadingUnsuccessfully: 'Failed to load data.',
     },
     action: {
         send: 'Send',

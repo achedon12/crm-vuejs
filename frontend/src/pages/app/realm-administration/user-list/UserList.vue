@@ -4,8 +4,10 @@ import Grid from "@/components/grid/Grid.vue";
 import {onMounted, ref} from "vue";
 import {useUserStore} from "@/stores/userStore";
 import {useRouter} from "vue-router";
+import {useI18n} from "vue-i18n"
 
 const {push} = useRouter();
+const {t} = useI18n();
 
 const userStore = useUserStore();
 const loading = ref(false);
@@ -16,23 +18,26 @@ onMounted(async () => {
   loading.value = false;
 })
 
-const gridTitle = 'Utilisateurs';
+const gridTitle = t('realmAdministration.userManagement.gridTitle', {
+  count: userStore.users.length
+});
+
 const columns = [
-  {key: 'username', label: 'Nom d’utilisateur', sortable: true},
-  {key: 'email', label: 'Email', sortable: true},
-  {key: 'firstname', label: 'Prénom', sortable: true},
-  {key: 'lastname', label: 'Nom de famille', sortable: true},
-  {key: 'role', label: 'Rôle', sortable: true},
-  {key: 'state', label: 'État', sortable: true},
+  {key: 'username', label: t('form.field.username'), sortable: true},
+  {key: 'email', label: t('form.field.email'), sortable: true},
+  {key: 'firstname', label: t('form.field.firstname'), sortable: true},
+  {key: 'lastname', label: t('form.field.lastname'), sortable: true},
+  {key: 'role', label: t('form.field.role'), sortable: true},
+  {key: 'state', label: t('form.field.state'), sortable: true},
   {
     key: 'createdAt',
-    label: 'Date de création',
+    label: t('form.field.createdAt'),
     render: (user) => new Date(user.createdAt).toLocaleDateString(),
     sortable: true
   },
   {
     key: 'updatedAt',
-    label: 'Date de mise à jour',
+    label: t('form.field.updatedAt'),
     render: (user) => new Date(user.updatedAt).toLocaleDateString(),
     sortable: true
   }
@@ -40,7 +45,7 @@ const columns = [
 
 const actions = [
   {
-    label: 'Créer un utilisateur',
+    label: t('realmAdministration.userManagement.create'),
     icon: 'add',
     command: async () => {
       await push({name: 'user-form', params: {id: null}});
@@ -48,7 +53,7 @@ const actions = [
     color: 'primary'
   },
   {
-    label: 'Modifier',
+    label: t('realmAdministration.userManagement.view'),
     icon: 'visibility',
     command: async (user) => {
       await push({name: 'user-form', params: {id: user ? user._id : null}});
@@ -56,7 +61,7 @@ const actions = [
     color: 'primary'
   },
   {
-    label: 'Supprimer',
+    label: t('realmAdministration.userManagement.delete'),
     icon: 'delete',
     command: (user) => {
       // userStore.deleteUser(user);

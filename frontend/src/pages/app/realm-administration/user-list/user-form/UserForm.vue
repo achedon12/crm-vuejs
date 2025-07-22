@@ -7,6 +7,7 @@ import {useRoute, useRouter} from "vue-router";
 import Request from "@/api/Request";
 import Urls from "@/api/Urls";
 import {useToast} from "vue-toastification";
+import {useI18n} from "vue-i18n";
 
 const route = useRoute();
 const {push} = useRouter();
@@ -14,6 +15,7 @@ const request = Request();
 const userStore = useUserStore();
 const authStore = useAuthStore();
 const toast = useToast();
+const {t} = useI18n();
 
 const isLoading = ref(false);
 const editMode = ref(false);
@@ -36,7 +38,7 @@ const fetchUser = async (userId: string) => {
     Object.assign(formData, response.data);
     formData.id = userId;
   } else {
-    toast.error("Impossible de charger l'utilisateur");
+    toast.error(t("toast.loadingUnsuccessfully"));
   }
   isLoading.value = false;
 };
@@ -58,16 +60,16 @@ const saveUser = async () => {
       await request.put(Urls.account.update + formData.id, user);
       await userStore.updateUser(user);
       await push({name: "realm-administration-home"});
-      toast.success("Utilisateur modifié avec succès");
+      toast.success(t("toast.updateSuccessfully"));
     } else {
       await request.post(Urls.account.create, user);
       await userStore.addUser(user);
       await push({name: "realm-administration-home"});
-      toast.success("Utilisateur créé avec succès");
+      toast.success(t("toast.createSuccessfully"));
     }
     editMode.value = false;
   } catch (e) {
-    toast.error("Erreur lors de l'enregistrement");
+    toast.error(t("error.generic"));
   } finally {
     isLoading.value = false;
   }
@@ -90,37 +92,55 @@ onMounted(async () => {
     <div v-else class="mx-auto max-w-4xl">
       <header class="flex justify-between items-center mb-8">
         <h1 class="text-2xl font-bold text-primary">
-          {{ isEdit ? "Détail utilisateur" : "Ajouter un utilisateur" }}
+          {{ isEdit ? t("realmAdministration.userManagement.view") : t("realmAdministration.userManagement.create") }}
         </h1>
         <div v-if="isEdit">
           <button v-if="!editMode" @click="editMode = true" class="btn btn-primary">
-            Modifier
+            {{ t("action.edit") }}
           </button>
           <div v-else class="flex gap-2">
-            <button @click="editMode = false" class="btn btn-ghost">Annuler</button>
-            <button @click="saveUser" class="btn btn-primary">Enregistrer</button>
+            <button @click="editMode = false" class="btn btn-ghost">
+              {{ t("action.cancel") }}
+            </button>
+            <button @click="saveUser" class="btn btn-primary">
+              {{ t("action.save") }}
+            </button>
           </div>
         </div>
       </header>
 
       <form v-if="editMode" @submit.prevent="saveUser" class="fieldset p-8 bg-base-100 shadow-lg rounded-lg">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <label class="label">Nom d’utilisateur</label>
+          <label class="label">
+            {{ t("form.field.username") }}
+          </label>
           <input v-model="formData.username" required class="input"/>
 
-          <label class="label">Email</label>
+          <label class="label">
+            {{ t("form.field.email") }}
+          </label>
           <input v-model="formData.email" type="email" required class="input"/>
 
-          <label class="label">Prénom</label>
+          <label class="label">
+            {{ t("form.field.firstname") }}
+          </label>
           <input v-model="formData.firstname" required class="input"/>
 
-          <label class="label">Nom de famille</label>
+          <label class="label">
+            {{ t("form.field.lastname") }}
+          </label>
           <input v-model="formData.lastname" required class="input"/>
 
-          <label class="label">Rôle</label>
+          <label class="label">
+            {{ t("form.field.role") }}
+          </label>
           <select v-model="formData.role" required class="select">
-            <option value="user">Utilisateur</option>
-            <option value="admin">Administrateur</option>
+            <option value="user">
+              {{ t("form.field.user") }}
+            </option>
+            <option value="admin">
+              {{ t("form.field.admin") }}
+            </option>
           </select>
         </div>
         <button type="submit" class="btn btn-primary mt-8">
@@ -131,24 +151,52 @@ onMounted(async () => {
       <div v-else class="p-8 bg-base-100 shadow-lg rounded-lg">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <span class="font-semibold">Nom d’utilisateur : </span>
+            <span class="font-semibold">
+              {{ t("form.field.username") }} :
+            </span>
             <span>{{ formData.username }}</span>
           </div>
           <div>
-            <span class="font-semibold">Email : </span>
+            <span class="font-semibold">
+              {{ t("form.field.email") }} :
+            </span>
             <span>{{ formData.email }}</span>
           </div>
           <div>
-            <span class="font-semibold">Prénom : </span>
+            <span class="font-semibold">
+              {{ t("form.field.firstname") }} :
+            </span>
             <span>{{ formData.firstname }}</span>
           </div>
           <div>
-            <span class="font-semibold">Nom de famille : </span>
+            <span class="font-semibold">
+              {{ t("form.field.lastname") }} :
+            </span>
             <span>{{ formData.lastname }}</span>
           </div>
           <div>
-            <span class="font-semibold">Rôle : </span>
+            <span class="font-semibold">
+              {{ t("form.field.role") }} :
+            </span>
             <span>{{ formData.role === 'admin' ? 'Administrateur' : 'Utilisateur' }}</span>
+          </div>
+          <div>
+            <span class="font-semibold">
+              {{ t("form.field.createdAt") }} :
+            </span>
+            <span>{{ new Date(formData.createdAt).toLocaleDateString() }}</span>
+          </div>
+          <div>
+            <span class="font-semibold">
+              {{ t("form.field.updatedAt") }} :
+            </span>
+            <span>{{ new Date(formData.updatedAt).toLocaleDateString() }}</span>
+          </div>
+          <div>
+            <span class="font-semibold">
+              {{ t("form.field.state") }} :
+            </span>
+            <span>{{ formData.state }}</span>
           </div>
         </div>
       </div>

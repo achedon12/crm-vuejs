@@ -70,6 +70,7 @@ const FRMessages = {
         field: {
             title: 'Titre',
             description: 'Description',
+            username: 'Nom d\'utilisateur',
             firstname: 'Prénom',
             lastname: 'Nom de famille',
             password: 'Mot de passe',
@@ -77,6 +78,12 @@ const FRMessages = {
             priority: 'Priorité',
             dueDate: 'Date d\'échéance',
             assigned: 'Assigné à',
+            role: 'Rôle',
+            state: 'État',
+            createdAt: 'Créé le',
+            updatedAt: 'Mis à jour le',
+            user: "Utilisateur",
+            admin : "Administrateur",
         },
         placeholder: {
             title: 'Entrez le titre',
@@ -112,6 +119,18 @@ const FRMessages = {
             }
         }
     },
+    realmAdministration: {
+        userManagement: {
+            title: 'Gestion des utilisateurs',
+            gridTitle: 'Utilisateurs du royaume : {count}',
+            create: "Créer un nouvel utilisateur",
+            view: "Détails de l'utilisateur",
+            delete: "Supprimer l'utilisateur",
+        },
+        roleManagement: {
+            title: 'Gestion des rôles',
+        },
+    },
     loading: {
         message: 'Chargement, veuillez patienter...',
         subMessage: 'Cela peut prendre quelques secondes.',
@@ -123,6 +142,7 @@ const FRMessages = {
         createSuccessfully: 'Créé avec succès.',
         uploadFailed: 'Échec du téléchargement du fichier.',
         uploadSuccess: 'Fichier uploadé avec succès.',
+        loadingUnsuccessfully: 'Échec du chargement des données.',
     },
     action: {
         send: 'Envoyer',
