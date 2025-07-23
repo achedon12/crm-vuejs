@@ -17,18 +17,16 @@ Make sure you have an env file
 ## Installation
 
 ### Backend
-
 ```bash
-  cd backend && npm install && npm run dev # to start the backend server
+  cd backend && docker compose up # to start the database and the mailer
 ```
 
 ```bash
   cd backend && npm run seed # to seed the database with some data
 ```
 
-
 ```bash
-  cd backend && docker compose up # to start the database and the mailer
+  cd backend && npm install && npm run dev # to start the backend server
 ```
 
 ### Frontend
