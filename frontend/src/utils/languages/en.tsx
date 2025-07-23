@@ -143,6 +143,12 @@ const ENMessages = {
         uploadFailed: 'File upload failed.',
         uploadSuccess: 'File uploaded successfully.',
         loadingUnsuccessfully: 'Failed to load data.',
+        deleteConfirmTitle: "Confirm Deletion",
+        deleteConfirmText: "Are you sure you want to delete this user? This action cannot be undone.",
+        deleteSuccessTitle: "User Deleted",
+        deleteSuccessText: "User has been successfully deleted.",
+        deleteErrorTitle: "Deletion Error",
+        deleteErrorText: "An error occurred while deleting the user. Please try again.",
     },
     action: {
         send: 'Send',
@@ -158,6 +164,10 @@ const ENMessages = {
     },
     error: {
         generic: 'An error occurred. Please try again later.',
+    },
+    common: {
+        confirm: "Confirm",
+        cancel: "Cancel",
     }
 }
 export default ENMessages

@@ -86,12 +86,8 @@ router.delete('/:id', verifyToken, async (req, res) => {
             return res.status(404).json({error: 'User not found'});
         }
 
-        if (req.userId !== req.params.id && !(req.user.role && req.user.role === 'admin' && user.realm && user.realm.equals(req.user.realm))) {
-            return res.status(403).json({message: 'You do not have permission to delete this user'});
-        }
-
         await Task.deleteMany({assignedTo: user._id});
-        await user.remove();
+        await User.findByIdAndDelete(req.params.id);
         res.status(200).json({message: 'User deleted successfully'});
     } catch (error) {
         Catch(error, res);

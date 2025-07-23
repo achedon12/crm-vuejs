@@ -27,6 +27,7 @@ const Urls = {
         create: '/user/create',
         get: '/user/',
         getFromRealm: '/user/realm/',
+        delete: '/user/',
     },
     notification: {
         switch: '/notification/switch',

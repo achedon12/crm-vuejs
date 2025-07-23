@@ -5,9 +5,13 @@ import {onMounted, ref} from "vue";
 import {useUserStore} from "@/stores/userStore";
 import {useRouter} from "vue-router";
 import {useI18n} from "vue-i18n"
+import Swal from "sweetalert2";
+import Request from "@/api/Request";
+import Urls from "@/api/Urls";
 
 const {push} = useRouter();
 const {t} = useI18n();
+const request = Request();
 
 const userStore = useUserStore();
 const loading = ref(false);
@@ -19,7 +23,7 @@ onMounted(async () => {
 })
 
 const gridTitle = t('realmAdministration.userManagement.gridTitle', {
-  count: userStore.users.length
+  count: userStore?.users?.length
 });
 
 const columns = [
@@ -64,11 +68,50 @@ const actions = [
     label: t('realmAdministration.userManagement.delete'),
     icon: 'delete',
     command: (user) => {
-      // userStore.deleteUser(user);
+      if (user && user._id) {
+        deleteUser(user._id);
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: t('realmAdministration.userManagement.deleteErrorTitle'),
+          text: t('realmAdministration.userManagement.deleteErrorText')
+        });
+      }
     },
     color: 'error'
   }
-]
+];
+
+const deleteUser = async (userId) => {
+  const result = await Swal.fire({
+    title: t('realmAdministration.userManagement.deleteConfirmTitle'),
+    text: t('realmAdministration.userManagement.deleteConfirmText'),
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: t('common.confirm'),
+    cancelButtonText: t('common.cancel')
+  });
+  if (result.isConfirmed) {
+    loading.value = true;
+    try {
+      await request.del(Urls.account.delete + userId);
+      await userStore.removeUser(userId);
+      Swal.fire({
+        icon: 'success',
+        title: t('realmAdministration.userManagement.deleteSuccessTitle'),
+        text: t('realmAdministration.userManagement.deleteSuccessText')
+      });
+    } catch (e) {
+      Swal.fire({
+        icon: 'error',
+        title: t('realmAdministration.userManagement.deleteErrorTitle'),
+        text: t('realmAdministration.userManagement.deleteErrorText')
+      });
+    } finally {
+      loading.value = false;
+    }
+  }
+};
 
 </script>
 

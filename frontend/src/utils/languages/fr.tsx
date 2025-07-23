@@ -126,6 +126,12 @@ const FRMessages = {
             create: "Créer un nouvel utilisateur",
             view: "Détails de l'utilisateur",
             delete: "Supprimer l'utilisateur",
+            deleteConfirmTitle: "Confirmer la suppression",
+            deleteConfirmText: "Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.",
+            deleteSuccessTitle: "Utilisateur supprimé",
+            deleteSuccessText: "L'utilisateur a été supprimé avec succès.",
+            deleteErrorTitle: "Erreur de suppression",
+            deleteErrorText: "Une erreur s'est produite lors de la suppression de l'utilisateur. Veuillez réessayer.",
         },
         roleManagement: {
             title: 'Gestion des rôles',
@@ -159,6 +165,10 @@ const FRMessages = {
     error: {
         generic: 'Une erreur est survenue. Veuillez réessayer plus tard.',
     },
+    common: {
+        confirm: "Confirmer",
+        cancel: "Annuler",
+    }
 }
 
 export default FRMessages
